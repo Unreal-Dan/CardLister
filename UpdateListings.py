@@ -1,5 +1,6 @@
 import requests
 import time
+import json
 from colorama import Fore, Style, init
 
 # Initialize Colorama for Windows compatibility
@@ -13,6 +14,8 @@ LOG_FILE = "tcg_price_report.txt"
 TCG_API_URL = "https://api.pokemontcg.io/v2/cards"
 ebay_listings = {"Lucario VSTAR": 15.50, "Snorlax V": 140.00}
 
+with open("ebay_listings.json", "r") as f:
+    ebay_listings = json.load(f)
 
 def get_price_margin():
     """Ask the user for a price margin percentage, defaulting to 12%."""
