@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Lister - Create Listings</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="module" src="js/main.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Card Lister</h1>
+        <button id="fetchEbay">🔄 Load eBay Listings</button>
+        <label for="currencySelect">Currency:</label>
+        <select id="currencySelect">
+            <option value="USD">USD</option>
+            <option value="CAD">CAD</option>
+            <option value="EUR">EUR</option>
+        </select>
+        <button id="massUpdate">⚡ Mass Update</button>
+        <input type="number" id="massUpdatePercent" placeholder="± % of TCG Price">
+        <button id="createListingBtn">➕ Create Listing</button>
+    </header>
+
+    <main>
+        <div id="listingsView" class="view">
+            <div class="list-container">
+                <ul id="listingList"></ul>
+            </div>
+        </div>
+
+        <div id="createListingView" class="view hidden">
+            <h2>Create New Listing</h2>
+            <input type="text" id="cardSearchInput" placeholder="Search for a card...">
+            <ul id="searchResults"></ul>
+
+            <div id="selectedCardDetails" class="hidden">
+                <h3>Selected Card</h3>
+                <img id="selectedCardImage" src="" alt="">
+                <p id="selectedCardName"></p>
+                <span>
+                  <label for="cardNumber">Card Number:</label>
+                  <input type="text" id="cardNumber">
+                </span>
+                <span>
+                  <label for="cardCondition">Condition:</label>
+                  <select id="cardCondition">
+                      <option value="Near Mint">Near Mint</option>
+                      <option value="Mint">Mint</option>
+                      <option value="Light Play">Light Play</option>
+                      <option value="Moderate Play">Moderate Play</option>
+                      <option value="Heavy Play">Heavy Play</option>
+                      <option value="Damaged">Damaged</option>
+                  </select>
+                </span>
+                <span>
+                  <label for="listingPrice">Price (CAD):</label>
+                  <input type="number" id="listingPrice" step="0.01">
+                </span>
+                <button id="confirmListing">Confirm Listing</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Card Lister</p>
+    </footer>
+</body>
+</html>
+

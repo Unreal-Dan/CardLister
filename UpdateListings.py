@@ -12,10 +12,21 @@ TCG_API_KEY = "0863e809-8d50-4006-a3fc-58d3ba2f9c2c"  # Replace with your API Ke
 # Configurable Settings
 LOG_FILE = "tcg_price_report.txt"
 TCG_API_URL = "https://api.pokemontcg.io/v2/cards"
-ebay_listings = {"Lucario VSTAR": 15.50, "Snorlax V": 140.00}
+ebay_listings = {
+    "Charizard VMAX": 80.00,
+    "Pikachu V": 10.50,
+    "Blastoise V": 25.00,
+    "Venusaur EX": 18.75,
+    "Rayquaza V": 45.00,
+    "Mewtwo V": 30.00,
+    "Eevee V": 12.50,
+    "Gyarados EX": 22.00,
+    "Lucario VSTAR": 15.50,
+    "Snorlax V": 14.00
+}
 
-with open("ebay_listings.json", "r") as f:
-    ebay_listings = json.load(f)
+# with open("ebay_listings.json", "r") as f:
+#     ebay_listings = json.load(f)
 
 def get_price_margin():
     """Ask the user for a price margin percentage, defaulting to 12%."""

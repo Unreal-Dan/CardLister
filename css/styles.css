@@ -1,0 +1,348 @@
+/* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    color: #333;
+}
+
+/* Global Box-Sizing */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Header Toolbar */
+header {
+    background: #0078D7;
+    color: #fff;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+header button,
+header select,
+header input {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #fff;
+    color: #0078D7;
+    transition: background 0.3s, color 0.3s;
+}
+
+header button:hover,
+header select:hover,
+header input:hover {
+    background: #e6f0ff;
+}
+
+/* Listings Container */
+.list-container {
+    width: 90%;
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    max-height: 500px;
+}
+
+/* Card Item Layout */
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.card-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    gap: 15px;
+    transition: background 0.3s;
+}
+
+.card-item:hover {
+    background: #f9f9f9;
+}
+
+.card-item img {
+    width: 70px;
+    height: 70px;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.card-info {
+    flex-grow: 1;
+    text-align: left;
+    font-size: 14px;
+    padding: 0 10px;
+}
+
+.price-diff {
+    font-weight: bold;
+}
+
+.positive {
+    color: green;
+}
+
+.negative {
+    color: red;
+}
+
+/* Footer */
+footer {
+    background: #333;
+    color: #fff;
+    padding: 15px;
+    font-size: 14px;
+    margin-top: 40px;
+}
+
+/* Create Listing View */
+#createListingView {
+    display: none;
+    padding: 20px;
+    margin-bottom: 60px; /* extra spacing before footer */
+}
+
+/* Search Results (Create Listing) */
+#searchResults {
+    list-style-type: none;
+    padding: 10px 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    width: 95%;
+    margin: 20px auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #fff;
+}
+
+/* Search Item */
+.search-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    margin: 5px 0;
+}
+
+.search-item:last-child {
+    border-bottom: none;
+}
+
+.search-item:hover {
+    background: #f0f0f0;
+    transform: scale(1.02);
+}
+
+.search-item img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+/* Selected Card Details */
+#selectedCardDetails {
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    width: 95%;
+    max-width: 800px;
+}
+
+/* Full-width elements */
+#selectedCardDetails h3,
+#selectedCardDetails img,
+#selectedCardDetails p,
+#selectedCardDetails button {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin: 0;
+}
+
+/* Label/Input Pairs */
+#selectedCardDetails label {
+    text-align: right;
+    align-self: center;
+    padding-right: 10px;
+}
+
+#selectedCardDetails input,
+#selectedCardDetails select {
+    width: 100%;
+    padding: 8px;
+}
+
+/* Confirm Button */
+#selectedCardDetails button {
+    padding: 10px;
+}
+
+/* Buttons, Inputs, and Selects Global */
+button,
+select,
+input {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+button:hover,
+select:hover,
+input:hover {
+    border-color: #0078D7;
+}
+
+/* Input Number Styling */
+input[type="number"] {
+    text-align: center;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+.view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Mobile & Tablet Responsive Adjustments */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        padding: 10px;
+        width: 100%;
+        overflow-x: hidden;
+    }
+    
+    header button,
+    header select,
+    header input {
+        width: 100%;
+        max-width: 100%;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .list-container {
+        width: 95%;
+        max-height: 600px;
+        padding: 15px;
+    }
+    
+    .card-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .card-item img {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .card-info {
+        text-align: center;
+        font-size: 16px;
+        padding: 10px 0;
+    }
+    
+    #searchResults {
+        max-height: 200px;
+        width: 90%;
+    }
+    
+    /* Adjust Selected Card Details to prevent overflow and scale properly */
+    #selectedCardDetails {
+        grid-template-columns: 1fr;
+        width: 100%;
+        padding: 10px;
+        margin: 10px auto;
+        gap: 10px;
+        overflow-x: hidden;
+    }
+    
+    /* Ensure full-width elements in Selected Card Details */
+    #selectedCardDetails h3,
+    #selectedCardDetails img,
+    #selectedCardDetails p,
+    #selectedCardDetails button {
+        grid-column: 1;
+        width: 100%;
+    }
+
+    #selectedCardDetails img {
+      max-width: 50%;
+      margin: 0 auto;
+    }
+    
+    /* Adjust label-input pairs */
+    #selectedCardDetails label,
+    #selectedCardDetails input,
+    #selectedCardDetails select {
+        width: 100%;
+        margin: 5px 0;
+        text-align: center;
+    }
+    
+    /* Make ebay listing (card-item) entries thinner on mobile */
+    .card-item {
+        flex-direction: row;
+        padding: 10px;
+        margin: 5px auto;
+    }
+    
+    .card-item img {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .card-info {
+        font-size: 14px;
+        padding: 0 5px;
+    }
+}
+
+/* Desktop Adjustments */
+@media (min-width: 769px) {
+    #selectedCardDetails {
+        width: 95%;
+        max-width: 800px;
+        margin: 20px auto;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
