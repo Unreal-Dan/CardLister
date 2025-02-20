@@ -73,7 +73,7 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
     <ItemSpecifics>
       <NameValueList>
         <Name>Game</Name>
-        <Value><![CDATA[' . htmlspecialchars($data['game']) . ']]></Value>
+        <Value>' . htmlspecialchars($data['game']) . '</Value>
       </NameValueList>
     </ItemSpecifics>
 
