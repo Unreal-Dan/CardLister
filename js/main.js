@@ -1,6 +1,6 @@
 // Import the fetchTCGPrice function from tcg_api.js
 import { searchTCGCards, fetchTCGPrice } from "./tcg_api.js";
-import { getSellerList } from "./ebay_api.js";
+import { getSellerList } from "./ebay_trading_api.js";
 
 const ebayButton = document.getElementById("fetchEbay");
 const listingList = document.getElementById("listingList");
