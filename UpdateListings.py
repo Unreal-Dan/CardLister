@@ -7,7 +7,7 @@ from colorama import Fore, Style, init
 init(autoreset=True)
 
 # API Key
-TCG_API_KEY = "0863e809-8d50-4006-a3fc-58d3ba2f9c2c"  # Replace with your API Key
+TCG_API_KEY = ""
 
 # Configurable Settings
 LOG_FILE = "tcg_price_report.txt"
