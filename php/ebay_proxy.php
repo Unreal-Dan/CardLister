@@ -12,7 +12,12 @@ $appID     = getenv("EBAY_APP_ID");
 $certID    = getenv("EBAY_CERT_ID");
 $userToken = isset($_SESSION['ebay_token']) ? $_SESSION['ebay_token'] : null;
 
-if (!$devID || !$appID || !$certID || !$userToken) {
+if (!$userToken) {
+    echo json_encode(["error" => "Missing user token, try connecting ebay account"]);
+    exit;
+}
+
+if (!$devID || !$appID || !$certID) {
     echo json_encode(["error" => "Missing one or more eBay credentials in environment"]);
     exit;
 }
