@@ -3,9 +3,9 @@
 // The PHP proxy returns JSON with { ack, items }, so we don't need
 // to parse XML here.
 
-export async function getSellerList() {
+export async function getMyEbaySelling() {
   try {
-    const response = await fetch("/php/ebay_proxy.php?action=getSellerList", {
+    const response = await fetch("/php/ebay_proxy.php?action=getMyEbaySelling", {
       method: "GET"
     });
     if (!response.ok) {

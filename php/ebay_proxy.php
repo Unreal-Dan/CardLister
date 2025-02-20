@@ -26,8 +26,8 @@ if (!$devID || !$appID || !$certID) {
 // Parse "action" to decide which call to make
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
-if ($action === "getSellerList") {
-    getSellerList($devID, $appID, $certID, $userToken);
+if ($action === "getMyEbaySelling") {
+    getMyEbaySelling($devID, $appID, $certID, $userToken);
 } else {
     echo json_encode(["error" => "Unknown or missing action"]);
     exit;
@@ -36,25 +36,22 @@ if ($action === "getSellerList") {
 /**
  * Calls GetSellerList via cURL and returns JSON with ack, errors & items
  */
-function getSellerList($devID, $appID, $certID, $userToken) {
+function getMyEbaySelling($devID, $appID, $certID, $userToken) {
     $endpoint = "https://api.ebay.com/ws/api.dll";
 
     $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
-<GetSellerListRequest xmlns="urn:ebay:apis:eBLBaseComponents">
+<GetMyeBaySellingRequest xmlns="urn:ebay:apis:eBLBaseComponents">
   <RequesterCredentials>
     <eBayAuthToken>' . $userToken . '</eBayAuthToken>
   </RequesterCredentials>
-  <DetailLevel>ReturnAll</DetailLevel>
-  <ErrorLanguage>en_US</ErrorLanguage>
-  <WarningLevel>High</WarningLevel>
-  <StartTimeFrom>2024-12-01T00:00:00.000Z</StartTimeFrom>
-  <StartTimeTo>2025-01-01T23:59:59.000Z</StartTimeTo>
-  <Pagination>
-    <EntriesPerPage>10</EntriesPerPage>
-    <PageNumber>1</PageNumber>
-  </Pagination>
-  <IncludeVariations>true</IncludeVariations>
-</GetSellerListRequest>';
+  <ActiveList>
+    <Sort>TimeLeft</Sort>
+    <Pagination>
+      <EntriesPerPage>10</EntriesPerPage>
+      <PageNumber>1</PageNumber>
+    </Pagination>
+  </ActiveList>
+</GetMyeBaySellingRequest>';
 
     // Ensure credentials are strings (convert arrays if needed)
     $devID  = is_array($devID)  ? implode(',', $devID)  : $devID;
@@ -64,7 +61,7 @@ function getSellerList($devID, $appID, $certID, $userToken) {
     $headers = [
         "X-EBAY-API-SITEID: 0",
         "X-EBAY-API-COMPATIBILITY-LEVEL: 967",
-        "X-EBAY-API-CALL-NAME: GetSellerList",
+        "X-EBAY-API-CALL-NAME: GetMyeBaySelling",
         "X-EBAY-API-DEV-NAME: $devID",
         "X-EBAY-API-APP-NAME: $appID",
         "X-EBAY-API-CERT-NAME: $certID",

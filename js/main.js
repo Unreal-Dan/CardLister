@@ -1,6 +1,6 @@
 // Import the fetchTCGPrice function from tcg_api.js
 import { searchTCGCards, fetchTCGPrice } from "./tcg_api.js";
-import { getSellerList } from "./ebay_trading_api.js";
+import { getMyEbaySelling } from "./ebay_trading_api.js";
 
 const ebayButton = document.getElementById("fetchEbay");
 const listingList = document.getElementById("listingList");
@@ -104,7 +104,7 @@ confirmListingBtn.addEventListener("click", () => {
 async function handleFetchEbayListings() {
   try {
     // Parse the XML response string into something usable
-    const parsedData = await getSellerList();
+    const parsedData = await getMyEbaySelling();
 
     console.log("Ack:", parsedData.ack);
     console.log("Found Items:", parsedData.items);
