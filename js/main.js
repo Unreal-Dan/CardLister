@@ -103,20 +103,26 @@ confirmListingBtn.addEventListener("click", () => {
 // Example usage to fetch and parse your listings:
 async function handleFetchEbayListings() {
   try {
-    // Parse the XML response string into something usable
     const parsedData = await getMyEbaySelling();
 
     console.log("Ack:", parsedData.ack);
     console.log("Found Items:", parsedData.items);
 
-    // Convert each returned item to your "listings" shape
+    if (!parsedData.items || parsedData.items.length === 0) {
+      console.warn("No listings found from eBay API.");
+      return;
+    }
+
+    // Update the listings array
     listings = parsedData.items.map(item => ({
       name: item.title,
-      ebayPrice: 9.99, // placeholder, you’d parse from the XML if available
-      image: null // likewise, if you have image data in the response
+      ebayPrice: parseFloat(item.price) || 0,
+      currency: item.currency || "USD",
+      image: item.image || "placeholder.jpg",
+      url: item.url || "#"
     }));
 
-    // Then proceed to renderListings();
+    // Call renderListings AFTER updating listings
     renderListings();
   } catch (error) {
     console.error("Error fetching eBay listings:", error);
@@ -139,11 +145,17 @@ async function convertCurrency(amount, from, to) {
 
 // Render listings in the UI
 async function renderListings() {
-  listingList.innerHTML = "";
+  listingList.innerHTML = ""; // Clear existing listings before re-rendering
+
+  if (!listings || listings.length === 0) {
+    listingList.innerHTML = "<p>No listings found.</p>";
+    return;
+  }
 
   for (let item of listings) {
+    // Fetch TCG price for comparison
     const { price: tcgPriceUSD, image: tcgImage } = await fetchTCGPrice(item.name);
-    if (!tcgPriceUSD) continue; // Skip if no TCG price found
+    if (!tcgPriceUSD) continue;
 
     const selectedCurrency = currencySelect.value;
     const tcgPrice = await convertCurrency(tcgPriceUSD, "USD", selectedCurrency);
@@ -154,20 +166,23 @@ async function renderListings() {
     const li = document.createElement("li");
     li.classList.add("card-item");
     li.innerHTML = `
-            <img src="${tcgImage || 'placeholder.jpg'}" alt="${item.name}">
-            <div class="card-info">
-                <strong>${item.name}</strong><br>
-                eBay: <span>${selectedCurrency} $${item.ebayPrice.toFixed(2)}</span><br>
-                TCG: <span>${selectedCurrency} $${tcgPrice.toFixed(2)}</span><br>
-                <span class="price-diff ${priceDiffClass}">${priceDiff.toFixed(2)}%</span>
-            </div>
-            <input type="number" value="${item.ebayPrice}" class="update-price">
-            <button class="update-button">✔</button>
-        `;
+        <a href="${item.url}" target="_blank">
+            <img src="${item.image}" alt="${item.name}">
+        </a>
+        <div class="card-info">
+            <strong>${item.name}</strong><br>
+            eBay: <span>${item.currency} $${item.ebayPrice.toFixed(2)}</span><br>
+            TCG: <span>${selectedCurrency} $${tcgPrice.toFixed(2)}</span><br>
+            <span class="price-diff ${priceDiffClass}">${priceDiff.toFixed(2)}%</span>
+        </div>
+        <input type="number" value="${item.ebayPrice}" class="update-price">
+        <button class="update-button">✔</button>
+    `;
 
     listingList.appendChild(li);
   }
 }
+
 
 // Event Listeners
 ebayButton.addEventListener("click", handleFetchEbayListings);
