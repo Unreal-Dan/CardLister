@@ -88,8 +88,9 @@ function getMyEbaySelling($devID, $appID, $certID, $userToken) {
         return;
     }
 
-    $parsed = parseEbayXmlResponse($rawResponse);
-    echo json_encode($parsed);
+    header("Content-Type: application/xml");
+    echo $rawResponse;
+    exit;
 }
 
 /**
