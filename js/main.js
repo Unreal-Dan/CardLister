@@ -165,13 +165,13 @@ async function renderListings() {
 
     // Fetch TCG price for comparison
     const { price, image } = await fetchTCGPrice(item.name);
-    if (!tcgPriceUSD) {
+    if (!price) {
       console.warn("No TCG price found for", item.name);
       continue;
     }
 
     const selectedCurrency = currencySelect.value;
-    const tcgPrice = await convertCurrency(tcgPriceUSD, "USD", selectedCurrency);
+    const tcgPrice = await convertCurrency(price, "USD", selectedCurrency);
 
     const priceDiff = ((item.ebayPrice - tcgPrice) / item.ebayPrice) * 100;
     const priceDiffClass = priceDiff > 0 ? "positive" : "negative";
