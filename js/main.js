@@ -166,8 +166,7 @@ async function renderListings() {
     // Fetch TCG price for comparison
     const { price, image } = await fetchTCGPrice(item.name);
     if (!price) {
-      console.warn("No TCG price found for", item.name, JSON.stringify(await fetchTCGPrice(item.name)));
-      continue;
+      price = 1.0;
     }
 
     const selectedCurrency = currencySelect.value;
