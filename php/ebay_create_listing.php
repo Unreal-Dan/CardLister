@@ -2,20 +2,33 @@
 session_start();
 header("Content-Type: application/json; charset=utf-8");
 
-$userToken = isset($_SESSION['ebay_token']['access_token']) ? $_SESSION['ebay_token']['access_token'] : null;
+// Retrieve eBay authentication token
+$userToken = $_SESSION['ebay_token']['access_token'] ?? null;
 if (!$userToken) {
     echo json_encode(["error" => "Missing eBay auth token"]);
     exit;
 }
 
+// Parse input JSON
 $data = json_decode(file_get_contents("php://input"), true);
 if (!$data || !isset($data['title'], $data['startPrice'], $data['categoryID'], $data['conditionID'])) {
     echo json_encode(["error" => "Invalid input parameters"]);
     exit;
 }
 
+// Default values for missing fields
+$data['grader'] = $data['grader'] ?? "Ungraded";  // If missing, default to 'Ungraded'
+$data['grade'] = $data['grade'] ?? "Ungraded";    // If missing, default to 'Ungraded'
+$data['game'] = $data['game'] ?? "Pokémon TCG";   // Default to Pokémon TCG
+$data['listingDuration'] = "10";                  // eBay does not allow GTC for trading cards
+$data['image'] = $data['image'] ?? "https://i.ebayimg.com/images/g/default.jpg"; // Default placeholder image
+$data['description'] = $data['description'] ?? "No description provided.";
+$data['conditionID'] = getEbayConditionID($data['conditionID']);
+
+// eBay API Endpoint
 $endpoint = "https://api.ebay.com/ws/api.dll";
 
+// Construct XML payload
 $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
 <AddItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
   <RequesterCredentials>
@@ -27,7 +40,7 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
       <CategoryID>' . $data['categoryID'] . '</CategoryID>
     </PrimaryCategory>
     <StartPrice currencyID="USD">' . $data['startPrice'] . '</StartPrice>
-    <ConditionID>' . getEbayConditionID($data['conditionID']) . '</ConditionID>
+    <ConditionID>' . $data['conditionID'] . '</ConditionID>
     <ListingDuration>' . $data['listingDuration'] . '</ListingDuration>
     <Quantity>1</Quantity>
     <PaymentMethods>CreditCard</PaymentMethods>
@@ -53,24 +66,25 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
     <PictureDetails>
       <PictureURL>' . $data['image'] . '</PictureURL>
     </PictureDetails>
-    <Description>' . htmlspecialchars($data['description']) . '</Description>
+    <Description><![CDATA[' . $data['description'] . ']]></Description>
     <ItemSpecifics>
       <NameValueList>
         <Name>Professional Grader</Name>
-        <Value>' . htmlspecialchars($data['grader']) . '</Value>
+        <Value><![CDATA[' . $data['grader'] . ']]></Value>
       </NameValueList>
       <NameValueList>
         <Name>Grade</Name>
-        <Value>' . htmlspecialchars($data['grade']) . '</Value>
+        <Value><![CDATA[' . $data['grade'] . ']]></Value>
       </NameValueList>
       <NameValueList>
         <Name>Game</Name>
-        <Value>' . htmlspecialchars($data['game']) . '</Value>
+        <Value><![CDATA[' . $data['game'] . ']]></Value>
       </NameValueList>
     </ItemSpecifics>
   </Item>
 </AddItemRequest>';
 
+// eBay API Headers
 $headers = [
     "X-EBAY-API-SITEID: 0",
     "X-EBAY-API-COMPATIBILITY-LEVEL: 967",
@@ -78,6 +92,7 @@ $headers = [
     "Content-Type: text/xml"
 ];
 
+// Send Request to eBay
 $ch = curl_init($endpoint);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -88,13 +103,18 @@ $rawResponse = curl_exec($ch);
 $err = curl_error($ch);
 curl_close($ch);
 
+// Handle errors
 if ($err) {
     echo json_encode(["error" => "cURL Error: $err"]);
     exit;
 }
 
+// Parse eBay Response
 echo json_encode(parseEbayXmlResponse($rawResponse));
 
+/**
+ * Parses eBay's XML response into JSON.
+ */
 function parseEbayXmlResponse($xmlString) {
     libxml_use_internal_errors(true);
     $xml = simplexml_load_string($xmlString);
@@ -117,17 +137,20 @@ function parseEbayXmlResponse($xmlString) {
     ];
 }
 
+/**
+ * Maps the condition to an eBay Condition ID.
+ */
 function getEbayConditionID($condition) {
     $conditionMap = [
         "New" => 1000,
-        "Near Mint" => 2750,
-        "Mint" => 2750,
+        "Near Mint" => 2750, // Graded
+        "Mint" => 2750,      // Graded
         "Light Play" => 2751,
         "Moderate Play" => 2752,
         "Heavy Play" => 2753,
         "Damaged" => 2754,
     ];
-    return $conditionMap[$condition] ?? 1000;
+    return $conditionMap[$condition] ?? 4000; // Default to "Ungraded"
 }
 ?>
 
