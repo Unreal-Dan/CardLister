@@ -164,7 +164,7 @@ async function renderListings() {
     console.log("Rendering Item:", item);
 
     // Fetch TCG price for comparison
-    const { price, image } = await fetchTCGPrice(item.name);
+    let { price, image } = await fetchTCGPrice(item.name);
     if (!price) {
       price = 1.0;
     }
