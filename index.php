@@ -18,8 +18,6 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 
 // Check if user is already logged in
 if (empty($_SESSION['logged_in'])):
-
-$appID  = getenv("EBAY_APP_ID");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -143,7 +141,7 @@ endif;
         <script>
           document.getElementById('connect-ebay').addEventListener('click', function () {
             // Replace these with your actual credentials and scopes:
-            const clientId = "<?= htmlspecialchars($appID) ?>";
+            const clientId = "DanielFr-TestStor-PRD-cdec421c8-8f28c701";
             const redirectUri = encodeURIComponent('https://cardlister.lol/ebay_oauth_success.php');
             const scopes = encodeURIComponent(
               'https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly'
