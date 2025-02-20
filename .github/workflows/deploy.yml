@@ -23,5 +23,5 @@ jobs:
       # 3) Deploy (copy) all files to the server
       - name: Deploy to Linode
         run: |
-          ssh cardlister@172.232.170.43 'cd /home/cardlister/cardlister && git reset --hard && git pull'
+          ssh cardlister@172.232.170.43 'cd /home/cardlister/CardLister && git reset --hard && git pull'
 
