@@ -30,8 +30,7 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
     <ConditionID>' . getEbayConditionID($data['conditionID']) . '</ConditionID>
     <ListingDuration>' . $data['listingDuration'] . '</ListingDuration>
     <Quantity>1</Quantity>
-    <PaymentMethods>PayPal</PaymentMethods>
-    <PayPalEmailAddress>your-paypal@example.com</PayPalEmailAddress>
+    <PaymentMethods>CreditCard</PaymentMethods>
     <DispatchTimeMax>2</DispatchTimeMax>
     <ShippingDetails>
       <ShippingType>Flat</ShippingType>
