@@ -20,7 +20,7 @@ if (!$data || !isset($data['title'], $data['startPrice'], $data['categoryID'], $
 $data['grader'] = $data['grader'] ?? "Ungraded";  // If missing, default to 'Ungraded'
 $data['grade'] = $data['grade'] ?? "Ungraded";    // If missing, default to 'Ungraded'
 $data['game'] = $data['game'] ?? "Pokémon TCG";   // Default to Pokémon TCG
-$data['listingDuration'] = $data['listingDuration'] ?? "GTC"; // Fix listing duration
+$data['listingDuration'] = $data['listingDuration'] ?? "Days_10"; // Fix listing duration
 $data['image'] = $data['image'] ?? "https://i.ebayimg.com/images/g/default.jpg"; // Default placeholder image
 $data['description'] = $data['description'] ?? "No description provided.";
 $data['conditionID'] = getEbayConditionID($data['conditionID']);
@@ -29,37 +29,23 @@ $data['conditionID'] = getEbayConditionID($data['conditionID']);
 $endpoint = "https://api.ebay.com/ws/api.dll";
 
 // Construct XML payload
-$xmlBody = `<AddItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
+$xmlBody = '<?xml version="1.0" encoding="utf-8"?>
+<AddItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
   <RequesterCredentials>
-    <eBayAuthToken><?= $userToken ?></eBayAuthToken>
+    <eBayAuthToken>' . $userToken . '</eBayAuthToken>
   </RequesterCredentials>
   <Item>
-    <Title><?= htmlspecialchars($data['title']) ?></Title>
+    <Title>' . htmlspecialchars($data['title']) . '</Title>
     <PrimaryCategory>
-      <CategoryID><?= $data['categoryID'] ?></CategoryID>
+      <CategoryID>' . $data['categoryID'] . '</CategoryID>
     </PrimaryCategory>
-    <ListingType>FixedPriceItem</ListingType> 
-    <StartPrice currencyID="USD"><?= $data['startPrice'] ?></StartPrice>
+    <StartPrice currencyID="USD">' . $data['startPrice'] . '</StartPrice>
+    <ConditionID>' . $data['conditionID'] . '</ConditionID>
+    <ListingType>FixedPriceItem</ListingType>
+    <ListingDuration>' . $data['listingDuration'] . '</ListingDuration>
     <Quantity>1</Quantity>
-    
-    <ItemSpecifics>
-      <NameValueList>
-        <Name>Professional Grader</Name>
-        <Value><?= htmlspecialchars($data['grader']) ?></Value>
-      </NameValueList>
-      <NameValueList>
-        <Name>Grade</Name>
-        <Value><?= htmlspecialchars($data['grade']) ?></Value>
-      </NameValueList>
-      <NameValueList>
-        <Name>Game</Name>
-        <Value><?= htmlspecialchars($data['game']) ?></Value>
-      </NameValueList>
-    </ItemSpecifics>
-    
     <PaymentMethods>CreditCard</PaymentMethods>
     <DispatchTimeMax>2</DispatchTimeMax>
-    
     <ShippingDetails>
       <ShippingType>Flat</ShippingType>
       <ShippingServiceOptions>
@@ -67,27 +53,37 @@ $xmlBody = `<AddItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
         <ShippingServiceCost currencyID="USD">4.99</ShippingServiceCost>
       </ShippingServiceOptions>
     </ShippingDetails>
-
     <ReturnPolicy>
       <ReturnsAcceptedOption>ReturnsAccepted</ReturnsAcceptedOption>
       <RefundOption>MoneyBack</RefundOption>
       <ReturnsWithinOption>Days_30</ReturnsWithinOption>
       <ShippingCostPaidByOption>Buyer</ShippingCostPaidByOption>
     </ReturnPolicy>
-
     <Country>US</Country>
     <Currency>USD</Currency>
     <PostalCode>10001</PostalCode>
     <Location>New York, NY</Location>
     <Site>US</Site>
-
     <PictureDetails>
-      <PictureURL><?= $data['image'] ?></PictureURL>
+      <PictureURL>' . $data['image'] . '</PictureURL>
     </PictureDetails>
-
-    <Description><?= htmlspecialchars($data['description']) ?></Description>
+    <Description><![CDATA[' . $data['description'] . ']]></Description>
+    <ItemSpecifics>
+      <NameValueList>
+        <Name>Professional Grader</Name>
+        <Value><![CDATA[' . $data['grader'] . ']]></Value>
+      </NameValueList>
+      <NameValueList>
+        <Name>Grade</Name>
+        <Value><![CDATA[' . $data['grade'] . ']]></Value>
+      </NameValueList>
+      <NameValueList>
+        <Name>Game</Name>
+        <Value><![CDATA[' . $data['game'] . ']]></Value>
+      </NameValueList>
+    </ItemSpecifics>
   </Item>
-</AddItemRequest>`;
+</AddItemRequest>';
 
 // eBay API Headers
 $headers = [
