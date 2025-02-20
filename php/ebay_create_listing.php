@@ -29,7 +29,7 @@ $data['conditionID'] = getEbayConditionID($data['conditionID']);
 $endpoint = "https://api.ebay.com/ws/api.dll";
 
 // Construct XML payload
-$xmlBody = '<AddItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
+$xmlBody = `<AddItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
   <RequesterCredentials>
     <eBayAuthToken><?= $userToken ?></eBayAuthToken>
   </RequesterCredentials>
@@ -87,7 +87,7 @@ $xmlBody = '<AddItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
 
     <Description><?= htmlspecialchars($data['description']) ?></Description>
   </Item>
-</AddItemRequest>';
+</AddItemRequest>`;
 
 // eBay API Headers
 $headers = [
