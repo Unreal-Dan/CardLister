@@ -1,17 +1,15 @@
 <?php
 session_start();
 
-// Define a simple, hardcoded username/password.
-// If you'd rather keep them outside the doc root, you could.
-$USERNAME = "cardadmin";
-$PASSWORD = "SuperSecret123";
+// Simple credentials (hard-coded example)
+$USERNAME = getenv('CARDLISTER_USERNAME'); // Read the key from your environment
+$PASSWORD = getenv('CARDLISTER_PASSWORD'); // Read the key from your environment
 
 // If the user submitted the login form:
 if (isset($_POST['username']) && isset($_POST['password'])) {
     if ($_POST['username'] === $USERNAME && $_POST['password'] === $PASSWORD) {
-        // Correct credentials
         $_SESSION['logged_in'] = true;
-        header("Location: index.php"); // reload page
+        header("Location: index.php");
         exit;
     } else {
         $error = "Invalid username or password!";
@@ -19,34 +17,112 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 }
 
 // Check if user is already logged in
-if (empty($_SESSION['logged_in'])) {
-    // Show a basic login form and stop rendering the rest of the page
-    ?>
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Login - CardLister</title>
-    </head>
-    <body>
-    <h1>CardLister Login</h1>
-    <?php if (!empty($error)) { echo "<p style='color:red;'>$error</p>"; } ?>
-    <form method="post" action="">
-        <label for="username">Username:</label><br>
-        <input type="text" name="username" id="username"><br><br>
-
-        <label for="password">Password:</label><br>
-        <input type="password" name="password" id="password"><br><br>
-
-        <button type="submit">Login</button>
-    </form>
-    </body>
-    </html>
-    <?php
-    exit; // Stop processing further HTML/PHP below
-}
+if (empty($_SESSION['logged_in'])):
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CardLister Login</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f7fa;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+    }
+
+    .login-container {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .error {
+      color: red;
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin: 10px 0 5px;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #0078D7;
+    }
+
+    button {
+      display: inline-block;
+      padding: 12px 20px;
+      font-size: 16px;
+      background: #0078D7;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background: #005cbf;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>CardLister Login</h1>
+    <?php if (!empty($error)): ?>
+      <div class="error"><?php echo $error; ?></div>
+    <?php endif; ?>
+    <form method="post" action="">
+      <label for="username">Username:</label>
+      <input type="text" name="username" id="username" autocomplete="off">
+
+      <label for="password">Password:</label>
+      <input type="password" name="password" id="password">
+
+      <button type="submit">Login</button>
+    </form>
+  </div>
+</body>
+</html>
+<?php
+  exit;
+endif;
+?>
 
 <!DOCTYPE html>
 <html lang="en">
