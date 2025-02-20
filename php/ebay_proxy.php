@@ -4,6 +4,7 @@
 // Reads dev/app/cert IDs + user token from environment variables.
 // Returns JSON { ack, items }.
 
+session_start();
 header("Content-Type: application/json; charset=utf-8");
 
 // Load credentials from environment
