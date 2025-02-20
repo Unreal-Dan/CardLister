@@ -1,5 +1,6 @@
 // Import the fetchTCGPrice function from tcg_api.js
 import { searchTCGCards, fetchTCGPrice } from "./tcg_api.js";
+import { getSellerList } from "./ebay_api.js";
 
 const ebayButton = document.getElementById("fetchEbay");
 const listingList = document.getElementById("listingList");
@@ -99,14 +100,26 @@ confirmListingBtn.addEventListener("click", () => {
   listingsView.style.display = "block"; // Ensure it becomes visible again
 });
 
-// Fetch eBay listings (Mock API for now, replace with real eBay API)
-async function fetchEbayListings() {
+// Example usage to fetch and parse your listings:
+async function handleFetchEbayListings() {
   try {
-    const response = await fetch("public/data/mock_ebay_listings.json");
-    listings = await response.json();
+    // Parse the XML response string into something usable
+    const parsedData = await getSellerList();
+
+    console.log("Ack:", parsedData.ack);
+    console.log("Found Items:", parsedData.items);
+
+    // Convert each returned item to your "listings" shape
+    listings = parsedData.items.map(item => ({
+      name: item.title,
+      ebayPrice: 9.99, // placeholder, you’d parse from the XML if available
+      image: null // likewise, if you have image data in the response
+    }));
+
+    // Then proceed to renderListings();
     renderListings();
   } catch (error) {
-    console.error("❌ Failed to fetch eBay listings:", error);
+    console.error("Error fetching eBay listings:", error);
   }
 }
 
@@ -157,6 +170,6 @@ async function renderListings() {
 }
 
 // Event Listeners
-ebayButton.addEventListener("click", fetchEbayListings);
+ebayButton.addEventListener("click", handleFetchEbayListings);
 currencySelect.addEventListener("change", renderListings);
 
