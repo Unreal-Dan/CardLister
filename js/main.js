@@ -91,7 +91,7 @@ confirmListingBtn.addEventListener("click", async () => {
     categoryID: "183454", // Example category for Pokémon Cards
     startPrice: parseFloat(document.getElementById("listingPrice").value) || 1.00,
     conditionID: document.getElementById("cardCondition").value,
-    listingDuration: "GTC",
+    listingDuration: "Days_10",
     quantity: 1,
     image: selectedCard.images?.large || null,
     description: `A beautiful ${document.getElementById("cardCondition").value} condition Pokémon card.`,

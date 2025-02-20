@@ -20,7 +20,7 @@ if (!$data || !isset($data['title'], $data['startPrice'], $data['categoryID'], $
 $data['grader'] = $data['grader'] ?? "Ungraded";  // If missing, default to 'Ungraded'
 $data['grade'] = $data['grade'] ?? "Ungraded";    // If missing, default to 'Ungraded'
 $data['game'] = $data['game'] ?? "Pokémon TCG";   // Default to Pokémon TCG
-$data['listingDuration'] = "10";                  // eBay does not allow GTC for trading cards
+$data['listingDuration'] = $data['listingDuration'] ?? "GTC"; // Fix listing duration
 $data['image'] = $data['image'] ?? "https://i.ebayimg.com/images/g/default.jpg"; // Default placeholder image
 $data['description'] = $data['description'] ?? "No description provided.";
 $data['conditionID'] = getEbayConditionID($data['conditionID']);
@@ -41,6 +41,7 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
     </PrimaryCategory>
     <StartPrice currencyID="USD">' . $data['startPrice'] . '</StartPrice>
     <ConditionID>' . $data['conditionID'] . '</ConditionID>
+    <ListingType>FixedPriceItem</ListingType>
     <ListingDuration>' . $data['listingDuration'] . '</ListingDuration>
     <Quantity>1</Quantity>
     <PaymentMethods>CreditCard</PaymentMethods>
