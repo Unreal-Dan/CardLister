@@ -103,17 +103,19 @@ confirmListingBtn.addEventListener("click", () => {
 // Example usage to fetch and parse your listings:
 async function handleFetchEbayListings() {
   try {
+    console.log("Fetching eBay Listings...");
+
     const parsedData = await getMyEbaySelling();
 
-    console.log("Ack:", parsedData.ack);
-    console.log("Found Items:", parsedData.items);
+    console.log("API Response:", parsedData);
+    console.log("Parsed eBay Items:", parsedData.items);
 
     if (!parsedData.items || parsedData.items.length === 0) {
-      console.warn("No listings found from eBay API.");
+      console.warn("No listings found.");
       return;
     }
 
-    // Update the listings array
+    // Update `listings`
     listings = parsedData.items.map(item => ({
       name: item.title,
       ebayPrice: parseFloat(item.price) || 0,
@@ -122,12 +124,15 @@ async function handleFetchEbayListings() {
       url: item.url || "#"
     }));
 
+    console.log("Updated Listings Array:", listings);
+
     // Call renderListings AFTER updating listings
     renderListings();
   } catch (error) {
     console.error("Error fetching eBay listings:", error);
   }
 }
+
 
 // Convert currency (Mock API for now, replace with real exchange rate API)
 async function convertCurrency(amount, from, to) {
