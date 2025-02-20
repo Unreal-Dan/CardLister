@@ -36,7 +36,7 @@ export async function searchTCGCards(query) {
   if (!query) return [];
 
   try {
-    console.log("Searching: [" + query + "]");
+    console.log("Searching: [" + encodeURIComponent(query) + "]");
     const response = await fetch(`/php/tcg_proxy.php?action=searchCards&query=${encodeURIComponent(query)}`, {
       method: "GET"
     });
