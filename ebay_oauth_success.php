@@ -7,8 +7,8 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Replace these with your actual eBay app credentials, ideally loaded securely (e.g., from environment variables)
-$clientId     = 'YOUR_CLIENT_ID';       // App ID
-$clientSecret = 'YOUR_CLIENT_SECRET';   // Cert ID
+$appID  = getenv("EBAY_APP_ID");
+$certID = getenv("EBAY_CERT_ID");
 $redirectUri  = 'https://cardlister.lol/ebay_oauth_success.php';
 
 // Check for the authorization code
@@ -31,7 +31,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/x-www-form-urlencoded',
-    'Authorization: Basic ' . base64_encode($clientId . ':' . $clientSecret),
+    'Authorization: Basic ' . base64_encode($appID . ':' . $certID),
 ]);
 
 $response = curl_exec($ch);
