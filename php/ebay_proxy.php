@@ -10,7 +10,7 @@ header("Content-Type: application/json; charset=utf-8");
 $devID     = getenv("EBAY_DEV_ID");
 $appID     = getenv("EBAY_APP_ID");
 $certID    = getenv("EBAY_CERT_ID");
-$userToken = $_SESSION['ebay_token'];
+$userToken = isset($_SESSION['ebay_token']) ? $_SESSION['ebay_token'] : null;
 
 if (!$devID || !$appID || !$certID || !$userToken) {
     echo json_encode(["error" => "Missing one or more eBay credentials in environment"]);
