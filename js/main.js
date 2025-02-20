@@ -20,6 +20,8 @@ const cardNumberInput = document.getElementById("cardNumber");
 const cardConditionInput = document.getElementById("cardCondition");
 const listingPriceInput = document.getElementById("listingPrice");
 const confirmListingBtn = document.getElementById("confirmListing");
+const cardGraderInput = document.getElementById("cardGrader");
+const cardGradeInput = document.getElementById("cardGrade");
 
 let listings = [];
 let selectedCard = null;
@@ -93,6 +95,9 @@ confirmListingBtn.addEventListener("click", async () => {
     quantity: 1,
     image: selectedCard.images?.large || null,
     description: `A beautiful ${document.getElementById("cardCondition").value} condition Pokémon card.`,
+    grader: cardGraderInput.value,
+    grade: cardGradeInput.value,
+    game: 'Pokémon TCG'
   };
 
   console.log("New Listing:", newListing);

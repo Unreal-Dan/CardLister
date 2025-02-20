@@ -54,6 +54,20 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
       <PictureURL>' . $data['image'] . '</PictureURL>
     </PictureDetails>
     <Description>' . htmlspecialchars($data['description']) . '</Description>
+    <ItemSpecifics>
+      <NameValueList>
+        <Name>Professional Grader</Name>
+        <Value>' . htmlspecialchars($data['grader']) . '</Value>
+      </NameValueList>
+      <NameValueList>
+        <Name>Grade</Name>
+        <Value>' . htmlspecialchars($data['grade']) . '</Value>
+      </NameValueList>
+      <NameValueList>
+        <Name>Game</Name>
+        <Value>' . htmlspecialchars($data['game']) . '</Value>
+      </NameValueList>
+    </ItemSpecifics>
   </Item>
 </AddItemRequest>';
 

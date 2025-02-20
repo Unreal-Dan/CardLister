@@ -185,6 +185,19 @@ endif;
                   <input type="text" id="cardNumber">
                 </span>
                 <span>
+                  <label for="cardGrader">Professional Grader:</label>
+                  <select id="cardGrader">
+                      <option value="PSA">PSA</option>
+                      <option value="BGS">BGS</option>
+                      <option value="CGC">CGC</option>
+                      <option value="Ungraded">Ungraded</option>
+                  </select>
+                </span>
+                <span>
+                  <label for="cardGrade">Grade:</label>
+                  <input type="number" id="cardGrade" min="1" max="10" step="0.5" placeholder="Enter a grade">
+                </span>
+                <span>
                   <label for="cardCondition">Condition:</label>
                   <select id="cardCondition">
                       <option value="Near Mint">Near Mint</option>
