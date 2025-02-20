@@ -150,17 +150,25 @@ async function convertCurrency(amount, from, to) {
 
 // Render listings in the UI
 async function renderListings() {
-  listingList.innerHTML = ""; // Clear existing listings before re-rendering
+  console.log("Rendering Listings... Current listings:", listings);
+
+  listingList.innerHTML = ""; // Clear old content
 
   if (!listings || listings.length === 0) {
     listingList.innerHTML = "<p>No listings found.</p>";
+    console.warn("No listings available to render.");
     return;
   }
 
   for (let item of listings) {
+    console.log("Rendering Item:", item);
+
     // Fetch TCG price for comparison
     const { price: tcgPriceUSD, image: tcgImage } = await fetchTCGPrice(item.name);
-    if (!tcgPriceUSD) continue;
+    if (!tcgPriceUSD) {
+      console.warn("No TCG price found for", item.name);
+      continue;
+    }
 
     const selectedCurrency = currencySelect.value;
     const tcgPrice = await convertCurrency(tcgPriceUSD, "USD", selectedCurrency);
@@ -186,8 +194,9 @@ async function renderListings() {
 
     listingList.appendChild(li);
   }
-}
 
+  console.log("Listings successfully rendered.");
+}
 
 // Event Listeners
 ebayButton.addEventListener("click", handleFetchEbayListings);
