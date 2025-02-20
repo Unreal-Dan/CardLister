@@ -1,9 +1,4 @@
 <?php
-// somephp/ebay_proxy.php
-// Proxy script to call eBay Trading API from the server.
-// Reads dev/app/cert IDs + user token from environment variables.
-// Returns JSON { ack, items }.
-
 session_start();
 header("Content-Type: application/json; charset=utf-8");
 
@@ -13,11 +8,18 @@ $appID     = getenv("EBAY_APP_ID");
 $certID    = getenv("EBAY_CERT_ID");
 $userToken = isset($_SESSION['ebay_token']) ? $_SESSION['ebay_token'] : null;
 
+// If the token is stored as an array, convert it to a string.
+if (is_array($userToken)) {
+    $userToken = implode(',', $userToken);
+}
+
 if (!$userToken) {
     echo json_encode(["error" => "Missing user token, try connecting ebay account"]);
     exit;
 }
-echo json_encode(["error" => "user token => $userToken"]);
+
+// (Optional) Debug: safely output the user token if needed
+// echo json_encode(["debug" => "user token => " . (is_array($userToken) ? json_encode($userToken) : $userToken)]);
 
 if (!$devID || !$appID || !$certID) {
     echo json_encode(["error" => "Missing one or more eBay credentials in environment"]);
@@ -57,6 +59,11 @@ function getSellerList($devID, $appID, $certID, $userToken) {
   <IncludeVariations>true</IncludeVariations>
 </GetSellerListRequest>';
 
+    // Ensure credentials are strings (if they are arrays, convert them)
+    $devID  = is_array($devID)  ? implode(',', $devID)  : $devID;
+    $appID  = is_array($appID)  ? implode(',', $appID)  : $appID;
+    $certID = is_array($certID) ? implode(',', $certID) : $certID;
+
     // Set headers for Trading API
     $headers = [
         "X-EBAY-API-SITEID: 0",
@@ -68,7 +75,6 @@ function getSellerList($devID, $appID, $certID, $userToken) {
         "Content-Type: text/xml"
     ];
 
-    // Make the request via cURL
     $ch = curl_init($endpoint);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -80,7 +86,6 @@ function getSellerList($devID, $appID, $certID, $userToken) {
     $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    // Handle errors
     if ($err) {
         echo json_encode(["error" => "cURL Error: $err"]);
         return;
@@ -90,7 +95,6 @@ function getSellerList($devID, $appID, $certID, $userToken) {
         return;
     }
 
-    // Parse the XML response in PHP, returning a simplified JSON structure
     $parsed = parseEbayXmlResponse($rawResponse);
     echo json_encode($parsed);
 }
@@ -112,20 +116,24 @@ function parseEbayXmlResponse($xmlString) {
         return ["ack" => "XML Parse Error", "items" => []];
     }
 
-    // Convert to JSON or find relevant fields
     $namespaces = $xml->getNamespaces(true);
-    // Typically, "urn:ebay:apis:eBLBaseComponents"
-    $ns = $namespaces[''] ?? '';
+    $ns = isset($namespaces['']) ? $namespaces[''] : '';
 
-    $ack  = (string) $xml->xpath("//ns:Ack")[0];
+    // Register the default namespace as "ns" for XPath queries
+    $xml->registerXPathNamespace('ns', $ns);
+
+    // Safely fetch the Ack node
+    $ackNodes = $xml->xpath("//ns:Ack");
+    $ack = ($ackNodes && isset($ackNodes[0])) ? (string)$ackNodes[0] : "Unknown";
+
     $itemNodes = $xml->xpath("//ns:Item") ?: [];
 
     $items = [];
     foreach ($itemNodes as $item) {
         $titleNode = $item->xpath("./ns:Title");
         $itemIdNode = $item->xpath("./ns:ItemID");
-        $title = $titleNode ? (string)$titleNode[0] : "";
-        $itemId = $itemIdNode ? (string)$itemIdNode[0] : "";
+        $title = ($titleNode && isset($titleNode[0])) ? (string)$titleNode[0] : "";
+        $itemId = ($itemIdNode && isset($itemIdNode[0])) ? (string)$itemIdNode[0] : "";
         $items[] = [
             "itemId" => $itemId,
             "title"  => $title
@@ -133,7 +141,7 @@ function parseEbayXmlResponse($xmlString) {
     }
 
     return [
-        "ack" => $ack ?: "Unknown",
+        "ack" => $ack,
         "items" => $items
     ];
 }
