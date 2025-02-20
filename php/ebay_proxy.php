@@ -17,6 +17,7 @@ if (!$userToken) {
     echo json_encode(["error" => "Missing user token, try connecting ebay account"]);
     exit;
 }
+echo json_encode(["error" => "user token => $userToken"]);
 
 if (!$devID || !$appID || !$certID) {
     echo json_encode(["error" => "Missing one or more eBay credentials in environment"]);
