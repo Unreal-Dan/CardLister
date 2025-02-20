@@ -18,9 +18,6 @@ if (!$userToken) {
     exit;
 }
 
-// (Optional) Debug: safely output the user token if needed
-// echo json_encode(["debug" => "user token => " . (is_array($userToken) ? json_encode($userToken) : $userToken)]);
-
 if (!$devID || !$appID || !$certID) {
     echo json_encode(["error" => "Missing one or more eBay credentials in environment"]);
     exit;
@@ -37,7 +34,7 @@ if ($action === "getSellerList") {
 }
 
 /**
- * Calls GetSellerList via cURL and returns JSON with ack & items
+ * Calls GetSellerList via cURL and returns JSON with ack, errors & items
  */
 function getSellerList($devID, $appID, $certID, $userToken) {
     $endpoint = "https://api.ebay.com/ws/api.dll";
@@ -59,12 +56,11 @@ function getSellerList($devID, $appID, $certID, $userToken) {
   <IncludeVariations>true</IncludeVariations>
 </GetSellerListRequest>';
 
-    // Ensure credentials are strings (if they are arrays, convert them)
+    // Ensure credentials are strings (convert arrays if needed)
     $devID  = is_array($devID)  ? implode(',', $devID)  : $devID;
     $appID  = is_array($appID)  ? implode(',', $appID)  : $appID;
     $certID = is_array($certID) ? implode(',', $certID) : $certID;
 
-    // Set headers for Trading API
     $headers = [
         "X-EBAY-API-SITEID: 0",
         "X-EBAY-API-COMPATIBILITY-LEVEL: 967",
@@ -103,6 +99,7 @@ function getSellerList($devID, $appID, $certID, $userToken) {
  * Parse the eBay Trading API XML response and extract:
  *  {
  *    ack: "Success" or "Failure" or ...
+ *    errors: [ { code: "...", message: "..." }, ... ],
  *    items: [
  *      { itemId: "...", title: "..." },
  *      ...
@@ -113,35 +110,42 @@ function parseEbayXmlResponse($xmlString) {
     libxml_use_internal_errors(true);
     $xml = simplexml_load_string($xmlString);
     if (!$xml) {
-        return ["ack" => "XML Parse Error", "items" => []];
+        return ["ack" => "XML Parse Error", "errors" => [], "items" => []];
     }
 
     $namespaces = $xml->getNamespaces(true);
     $ns = isset($namespaces['']) ? $namespaces[''] : '';
-
-    // Register the default namespace as "ns" for XPath queries
     $xml->registerXPathNamespace('ns', $ns);
 
-    // Safely fetch the Ack node
+    // Extract error details from <Errors> nodes
+    $errorsNodes = $xml->xpath("//ns:Errors");
+    $errorMessages = [];
+    if ($errorsNodes) {
+        foreach ($errorsNodes as $errorNode) {
+            $codeNodes = $errorNode->xpath("./ns:ErrorCode");
+            $msgNodes = $errorNode->xpath("./ns:LongMessage");
+            $code = ($codeNodes && isset($codeNodes[0])) ? (string)$codeNodes[0] : "";
+            $msg = ($msgNodes && isset($msgNodes[0])) ? (string)$msgNodes[0] : "";
+            $errorMessages[] = ["code" => $code, "message" => $msg];
+        }
+    }
+
     $ackNodes = $xml->xpath("//ns:Ack");
     $ack = ($ackNodes && isset($ackNodes[0])) ? (string)$ackNodes[0] : "Unknown";
 
     $itemNodes = $xml->xpath("//ns:Item") ?: [];
-
     $items = [];
     foreach ($itemNodes as $item) {
         $titleNode = $item->xpath("./ns:Title");
         $itemIdNode = $item->xpath("./ns:ItemID");
         $title = ($titleNode && isset($titleNode[0])) ? (string)$titleNode[0] : "";
         $itemId = ($itemIdNode && isset($itemIdNode[0])) ? (string)$itemIdNode[0] : "";
-        $items[] = [
-            "itemId" => $itemId,
-            "title"  => $title
-        ];
+        $items[] = ["itemId" => $itemId, "title" => $title];
     }
 
     return [
         "ack" => $ack,
+        "errors" => $errorMessages,
         "items" => $items
     ];
 }
