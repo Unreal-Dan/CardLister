@@ -1,5 +1,5 @@
 // Import the fetchTCGPrice function from tcg_api.js
-import { searchTCGCards, fetchTCGPrice } from "./tcg_api.js";
+import { searchTCGCards, fetchTCGPrice, getBestMatchingCard } from "./tcg_api.js";
 import { getMyEbaySelling, createEbayListing } from "./ebay_trading_api.js";
 
 
