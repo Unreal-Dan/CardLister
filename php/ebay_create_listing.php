@@ -20,7 +20,7 @@ if (!$data || !isset($data['title'], $data['startPrice'], $data['categoryID'], $
 $data['grader'] = $data['grader'] ?? "Ungraded";  // If missing, default to 'Ungraded'
 $data['grade'] = $data['grade'] ?? "Ungraded";    // If missing, default to 'Ungraded'
 $data['game'] = $data['game'] ?? "Pokémon TCG";   // Default to Pokémon TCG
-$data['listingDuration'] = $data['listingDuration'] ?? "Days_10"; // Fix listing duration
+$data['listingDuration'] = $data['listingDuration'] ?? "GTC"; // Fix listing duration
 $data['image'] = $data['image'] ?? "https://i.ebayimg.com/images/g/default.jpg"; // Default placeholder image
 $data['description'] = $data['description'] ?? "No description provided.";
 $data['conditionID'] = getEbayConditionID($data['conditionID']);
@@ -42,7 +42,6 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
     <StartPrice currencyID="USD">' . $data['startPrice'] . '</StartPrice>
     <ConditionID>' . $data['conditionID'] . '</ConditionID>
     <ListingType>FixedPriceItem</ListingType>
-    <ListingDuration>' . $data['listingDuration'] . '</ListingDuration>
     <Quantity>1</Quantity>
     <PaymentMethods>CreditCard</PaymentMethods>
     <DispatchTimeMax>2</DispatchTimeMax>
@@ -68,20 +67,18 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
       <PictureURL>' . $data['image'] . '</PictureURL>
     </PictureDetails>
     <Description><![CDATA[' . $data['description'] . ']]></Description>
-    <ItemSpecifics>
-      <NameValueList>
-        <Name>Professional Grader</Name>
-        <Value><![CDATA[' . $data['grader'] . ']]></Value>
-      </NameValueList>
-      <NameValueList>
-        <Name>Grade</Name>
-        <Value><![CDATA[' . $data['grade'] . ']]></Value>
-      </NameValueList>
-      <NameValueList>
-        <Name>Game</Name>
-        <Value><![CDATA[' . $data['game'] . ']]></Value>
-      </NameValueList>
-    </ItemSpecifics>
+
+    <!-- Fix: ConditionDescriptors for Trading Cards -->
+    <ConditionDescriptors>
+      <ConditionDescriptor>
+        <Name>27501</Name> <!-- Professional Grader -->
+        <Value>' . htmlspecialchars($data['grader']) . '</Value>
+      </ConditionDescriptor>
+      <ConditionDescriptor>
+        <Name>27502</Name> <!-- Grade -->
+        <Value>' . htmlspecialchars($data['grade']) . '</Value>
+      </ConditionDescriptor>
+    </ConditionDescriptors>
   </Item>
 </AddItemRequest>';
 
