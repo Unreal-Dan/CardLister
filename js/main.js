@@ -1,6 +1,7 @@
 // Import the fetchTCGPrice function from tcg_api.js
 import { searchTCGCards, fetchTCGPrice } from "./tcg_api.js";
-import { getMyEbaySelling } from "./ebay_trading_api.js";
+import { getMyEbaySelling, createEbayListing } from "./ebay_trading_api.js";
+
 
 const ebayButton = document.getElementById("fetchEbay");
 const listingList = document.getElementById("listingList");
@@ -80,16 +81,18 @@ function selectCard(card) {
 }
 
 // Confirm Listing
-confirmListingBtn.addEventListener("click", () => {
+confirmListingBtn.addEventListener("click", async () => {
   if (!selectedCard) return alert("Select a card first.");
 
   const newListing = {
-    name: selectedCard.name,
-    set: selectedCard.set.name,
-    image: selectedCard.images?.large,
-    number: cardNumberInput.value,
-    condition: cardConditionInput.value,
-    price: parseFloat(listingPriceInput.value),
+    title: selectedCard.name + " (" + selectedCard.set.name + ")",
+    categoryID: "183454", // Example category for Pokémon Cards
+    startPrice: parseFloat(document.getElementById("listingPrice").value) || 1.00,
+    conditionID: document.getElementById("cardCondition").value,
+    listingDuration: "GTC",
+    quantity: 1,
+    image: selectedCard.images?.large || null,
+    description: `A beautiful ${document.getElementById("cardCondition").value} condition Pokémon card.`,
   };
 
   console.log("New Listing:", newListing);
@@ -98,6 +101,12 @@ confirmListingBtn.addEventListener("click", () => {
   createListingView.style.display = "none"; // Ensure it is hidden
   listingsView.classList.remove("hidden");
   listingsView.style.display = "block"; // Ensure it becomes visible again
+
+
+  const result = await createEbayListing(newListing);
+  if (result.ack === "Success") {
+    alert("Listing successfully created on eBay!");
+  }
 });
 
 // Example usage to fetch and parse your listings:
