@@ -1,3 +1,53 @@
+<?php
+session_start();
+
+// Define a simple, hardcoded username/password.
+// If you'd rather keep them outside the doc root, you could.
+$USERNAME = "cardadmin";
+$PASSWORD = "SuperSecret123";
+
+// If the user submitted the login form:
+if (isset($_POST['username']) && isset($_POST['password'])) {
+    if ($_POST['username'] === $USERNAME && $_POST['password'] === $PASSWORD) {
+        // Correct credentials
+        $_SESSION['logged_in'] = true;
+        header("Location: index.php"); // reload page
+        exit;
+    } else {
+        $error = "Invalid username or password!";
+    }
+}
+
+// Check if user is already logged in
+if (empty($_SESSION['logged_in'])) {
+    // Show a basic login form and stop rendering the rest of the page
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Login - CardLister</title>
+    </head>
+    <body>
+    <h1>CardLister Login</h1>
+    <?php if (!empty($error)) { echo "<p style='color:red;'>$error</p>"; } ?>
+    <form method="post" action="">
+        <label for="username">Username:</label><br>
+        <input type="text" name="username" id="username"><br><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" name="password" id="password"><br><br>
+
+        <button type="submit">Login</button>
+    </form>
+    </body>
+    </html>
+    <?php
+    exit; // Stop processing further HTML/PHP below
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
