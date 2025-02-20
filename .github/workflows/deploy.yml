@@ -1,0 +1,27 @@
+name: Deploy CardLister
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04  # or ubuntu-latest
+
+    steps:
+      # 1) Set up SSH Agent (for SSH private key in GitHub Secrets)
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+      # 2) Add Linode (or any server) to known_hosts to avoid "host key verification" issues
+      - name: Add server to known_hosts
+        run: ssh-keyscan 172.232.170.43 >> ~/.ssh/known_hosts
+
+      # 3) Deploy (copy) all files to the server
+      - name: Deploy to Linode
+        run: |
+          ssh cardlister@172.232.170.43 'cd /home/cardlister/cardlister && git reset --hard && git pull'
+
