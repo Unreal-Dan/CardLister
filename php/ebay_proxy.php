@@ -7,10 +7,10 @@
 header("Content-Type: application/json; charset=utf-8");
 
 // Load credentials from environment
-$devID    = getenv("EBAY_DEV_ID");
-$appID    = getenv("EBAY_APP_ID");
-$certID   = getenv("EBAY_CERT_ID");
-$userToken= getenv("EBAY_USER_TOKEN");
+$devID     = getenv("EBAY_DEV_ID");
+$appID     = getenv("EBAY_APP_ID");
+$certID    = getenv("EBAY_CERT_ID");
+$userToken = $SESSION['ebay_token'];
 
 if (!$devID || !$appID || !$certID || !$userToken) {
     echo json_encode(["error" => "Missing one or more eBay credentials in environment"]);
