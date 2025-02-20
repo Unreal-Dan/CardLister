@@ -29,23 +29,37 @@ $data['conditionID'] = getEbayConditionID($data['conditionID']);
 $endpoint = "https://api.ebay.com/ws/api.dll";
 
 // Construct XML payload
-$xmlBody = '<?xml version="1.0" encoding="utf-8"?>
-<AddItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
+$xmlBody = '<AddItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
   <RequesterCredentials>
-    <eBayAuthToken>' . $userToken . '</eBayAuthToken>
+    <eBayAuthToken><?= $userToken ?></eBayAuthToken>
   </RequesterCredentials>
   <Item>
-    <Title>' . htmlspecialchars($data['title']) . '</Title>
+    <Title><?= htmlspecialchars($data['title']) ?></Title>
     <PrimaryCategory>
-      <CategoryID>' . $data['categoryID'] . '</CategoryID>
+      <CategoryID><?= $data['categoryID'] ?></CategoryID>
     </PrimaryCategory>
-    <StartPrice currencyID="USD">' . $data['startPrice'] . '</StartPrice>
-    <ConditionID>' . $data['conditionID'] . '</ConditionID>
-    <ListingType>FixedPriceItem</ListingType>
-    <ListingDuration>' . $data['listingDuration'] . '</ListingDuration>
+    <ListingType>FixedPriceItem</ListingType> 
+    <StartPrice currencyID="USD"><?= $data['startPrice'] ?></StartPrice>
     <Quantity>1</Quantity>
+    
+    <ItemSpecifics>
+      <NameValueList>
+        <Name>Professional Grader</Name>
+        <Value><?= htmlspecialchars($data['grader']) ?></Value>
+      </NameValueList>
+      <NameValueList>
+        <Name>Grade</Name>
+        <Value><?= htmlspecialchars($data['grade']) ?></Value>
+      </NameValueList>
+      <NameValueList>
+        <Name>Game</Name>
+        <Value><?= htmlspecialchars($data['game']) ?></Value>
+      </NameValueList>
+    </ItemSpecifics>
+    
     <PaymentMethods>CreditCard</PaymentMethods>
     <DispatchTimeMax>2</DispatchTimeMax>
+    
     <ShippingDetails>
       <ShippingType>Flat</ShippingType>
       <ShippingServiceOptions>
@@ -53,35 +67,25 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
         <ShippingServiceCost currencyID="USD">4.99</ShippingServiceCost>
       </ShippingServiceOptions>
     </ShippingDetails>
+
     <ReturnPolicy>
       <ReturnsAcceptedOption>ReturnsAccepted</ReturnsAcceptedOption>
       <RefundOption>MoneyBack</RefundOption>
       <ReturnsWithinOption>Days_30</ReturnsWithinOption>
       <ShippingCostPaidByOption>Buyer</ShippingCostPaidByOption>
     </ReturnPolicy>
+
     <Country>US</Country>
     <Currency>USD</Currency>
     <PostalCode>10001</PostalCode>
     <Location>New York, NY</Location>
     <Site>US</Site>
+
     <PictureDetails>
-      <PictureURL>' . $data['image'] . '</PictureURL>
+      <PictureURL><?= $data['image'] ?></PictureURL>
     </PictureDetails>
-    <Description><![CDATA[' . $data['description'] . ']]></Description>
-    <ItemSpecifics>
-      <NameValueList>
-        <Name>Professional Grader</Name>
-        <Value><![CDATA[' . $data['grader'] . ']]></Value>
-      </NameValueList>
-      <NameValueList>
-        <Name>Grade</Name>
-        <Value><![CDATA[' . $data['grade'] . ']]></Value>
-      </NameValueList>
-      <NameValueList>
-        <Name>Game</Name>
-        <Value><![CDATA[' . $data['game'] . ']]></Value>
-      </NameValueList>
-    </ItemSpecifics>
+
+    <Description><?= htmlspecialchars($data['description']) ?></Description>
   </Item>
 </AddItemRequest>';
 
