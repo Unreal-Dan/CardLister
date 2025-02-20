@@ -136,6 +136,22 @@ endif;
 <body>
     <header>
         <h1>Card Lister</h1>
+        <button id="connect-ebay">Connect eBay Account</button>
+
+        <script>
+          document.getElementById('connect-ebay').addEventListener('click', function () {
+            // Replace these with your actual credentials and scopes:
+            const clientId = 'YOUR_CLIENT_ID';
+            const redirectUri = encodeURIComponent('https://cardlister.lol/ebay_oauth_success.php');
+            const scopes = encodeURIComponent(
+              'https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly'
+            );
+
+            const authUrl = `https://auth.ebay.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scopes}`;
+            window.location.href = authUrl;
+          });
+        </script>
+
         <button id="fetchEbay">🔄 Load eBay Listings</button>
         <label for="currencySelect">Currency:</label>
         <select id="currencySelect">
