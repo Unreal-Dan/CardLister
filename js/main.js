@@ -183,7 +183,7 @@ async function renderListings() {
     const selectedCurrency = currencySelect.value;
     const tcgPrice = await convertCurrency(price, "USD", selectedCurrency);
 
-    const priceDiff = ((item.ebayPrice - tcgPrice) / item.ebayPrice) * 100;
+    const priceDiff = ((item.ebayPrice - tcgPrice) / tcgPrice) * 100;
     const priceDiffClass = priceDiff > 0 ? "positive" : "negative";
 
     const li = document.createElement("li");
