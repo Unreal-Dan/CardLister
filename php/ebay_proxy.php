@@ -6,7 +6,7 @@ header("Content-Type: application/json; charset=utf-8");
 $devID     = getenv("EBAY_DEV_ID");
 $appID     = getenv("EBAY_APP_ID");
 $certID    = getenv("EBAY_CERT_ID");
-$userToken = isset($_SESSION['ebay_token']) ? $_SESSION['ebay_token'] : null;
+$userToken = isset($_SESSION['ebay_token']['access_token']) ? $_SESSION['ebay_token']['access_token'] : null;
 
 // If the token is stored as an array, convert it to a string.
 if (is_array($userToken)) {
@@ -47,8 +47,8 @@ function getSellerList($devID, $appID, $certID, $userToken) {
   <DetailLevel>ReturnAll</DetailLevel>
   <ErrorLanguage>en_US</ErrorLanguage>
   <WarningLevel>High</WarningLevel>
-  <StartTimeFrom>2023-01-01T00:00:00.000Z</StartTimeFrom>
-  <StartTimeTo>2025-12-31T23:59:59.000Z</StartTimeTo>
+  <StartTimeFrom>2024-12-01T00:00:00.000Z</StartTimeFrom>
+  <StartTimeTo>2025-01-01T23:59:59.000Z</StartTimeTo>
   <Pagination>
     <EntriesPerPage>10</EntriesPerPage>
     <PageNumber>1</PageNumber>
@@ -144,6 +144,7 @@ function parseEbayXmlResponse($xmlString) {
     }
 
     return [
+        "response" => $xml,
         "ack" => $ack,
         "errors" => $errorMessages,
         "items" => $items
