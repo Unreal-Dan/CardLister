@@ -3,7 +3,7 @@ name: Deploy CardLister
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
