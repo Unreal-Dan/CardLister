@@ -2,7 +2,7 @@
 session_start();
 header("Content-Type: application/json; charset=utf-8");
 
-$userToken = isset($_SESSION['ebay_token']) ? $_SESSION['ebay_token'] : null;
+$userToken = isset($_SESSION['ebay_token']['access_token']) ? $_SESSION['ebay_token']['access_token'] : null;
 if (!$userToken) {
     echo json_encode(["error" => "Missing eBay auth token"]);
     exit;
