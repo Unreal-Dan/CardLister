@@ -41,6 +41,7 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
     </PrimaryCategory>
     <StartPrice currencyID="USD">' . $data['startPrice'] . '</StartPrice>
     <ConditionID>' . $data['conditionID'] . '</ConditionID>
+    <ListingDuration><![CDATA[GTC]]></ListingDuration>
     <ListingType>FixedPriceItem</ListingType>
     <Quantity>1</Quantity>
     <PaymentMethods>CreditCard</PaymentMethods>
