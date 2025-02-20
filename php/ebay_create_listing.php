@@ -17,8 +17,8 @@ if (!$data || !isset($data['title'], $data['startPrice'], $data['categoryID'], $
 }
 
 // Default values for missing fields
-$data['grader'] = $data['grader'] ?? "Ungraded";  // If missing, default to 'Ungraded'
-$data['grade'] = $data['grade'] ?? "Ungraded";    // If missing, default to 'Ungraded'
+$data['grader'] = $data['grader'] ?? "Ungraded";  // Default to 'Ungraded'
+$data['grade'] = $data['grade'] ?? "Ungraded";    // Default to 'Ungraded'
 $data['game'] = $data['game'] ?? "Pokémon TCG";   // Default to Pokémon TCG
 $data['listingDuration'] = $data['listingDuration'] ?? "GTC"; // Fix listing duration
 $data['image'] = $data['image'] ?? "https://i.ebayimg.com/images/g/default.jpg"; // Default placeholder image
@@ -37,11 +37,11 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
   <Item>
     <Title>' . htmlspecialchars($data['title']) . '</Title>
     <PrimaryCategory>
-      <CategoryID>' . $data['categoryID'] . '</CategoryID>
+      <CategoryID>183454</CategoryID>
     </PrimaryCategory>
     <StartPrice currencyID="USD">' . $data['startPrice'] . '</StartPrice>
     <ConditionID>' . $data['conditionID'] . '</ConditionID>
-    <ListingDuration><![CDATA[GTC]]></ListingDuration>
+    <ListingDuration>GTC</ListingDuration>
     <ListingType>FixedPriceItem</ListingType>
     <Quantity>1</Quantity>
     <PaymentMethods>CreditCard</PaymentMethods>
@@ -69,7 +69,15 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
     </PictureDetails>
     <Description><![CDATA[' . $data['description'] . ']]></Description>
 
-    <!-- Fix: ConditionDescriptors for Trading Cards -->
+    <!-- Item Specifics -->
+    <ItemSpecifics>
+      <NameValueList>
+        <Name>Game</Name>
+        <Value><![CDATA[' . htmlspecialchars($data['game']) . ']]></Value>
+      </NameValueList>
+    </ItemSpecifics>
+
+    <!-- Condition Descriptors for Trading Cards -->
     <ConditionDescriptors>
       <ConditionDescriptor>
         <Name>27501</Name> <!-- Professional Grader -->

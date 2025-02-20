@@ -88,16 +88,13 @@ confirmListingBtn.addEventListener("click", async () => {
 
   const newListing = {
     title: selectedCard.name + " (" + selectedCard.set.name + ")",
-    categoryID: "183454", // Example category for Pokémon Cards
     startPrice: parseFloat(document.getElementById("listingPrice").value) || 1.00,
     conditionID: document.getElementById("cardCondition").value,
-    listingDuration: "GTC",
     quantity: 1,
     image: selectedCard.images?.large || null,
     description: `A beautiful ${document.getElementById("cardCondition").value} condition Pokémon card.`,
     grader: cardGraderInput.value,
     grade: cardGradeInput.value,
-    game: 'Pokémon TCG'
   };
 
   console.log("New Listing:", newListing);
