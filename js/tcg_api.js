@@ -141,6 +141,34 @@ export async function extractCardInfoFromEbayTitle(title) {
 
   console.log(`🔍 Parsing eBay Title: ${title}`);
 
+  // Extract set name from title
+  const SET_NAME_TO_ID = {
+    "Base Set": "base1",
+    "Jungle": "base2",
+    "Fossil": "base3",
+    "Team Rocket": "base4",
+    "Neo Genesis": "neo1",
+    "Neo Discovery": "neo2",
+    "Neo Revelation": "neo3",
+    "Neo Destiny": "neo4",
+    "Expedition": "ecard1",
+    "Aquapolis": "ecard2",
+    "Skyridge": "ecard3",
+    "EX Ruby & Sapphire": "ex1",
+    "EX Sandstorm": "ex2",
+    "EX Dragon": "ex3",
+    "Diamond & Pearl": "dp1",
+    "Platinum": "pl1",
+    "HeartGold & SoulSilver": "hgss1",
+    "Black & White": "bw1",
+    "XY": "xy1",
+    "Sun & Moon": "sm1",
+    "Sword & Shield": "swsh1",
+    "Scarlet & Violet": "sv1"
+  };
+
+
+
   let setId = "";
   let cardNumber = "";
 
@@ -157,33 +185,6 @@ export async function extractCardInfoFromEbayTitle(title) {
     if (numberMatch) {
       cardNumber = numberMatch[0].split("/")[0];
     }
-
-    // Extract set name from title
-    const SET_NAME_TO_ID = {
-      "Base Set": "base1",
-      "Jungle": "base2",
-      "Fossil": "base3",
-      "Team Rocket": "base4",
-      "Neo Genesis": "neo1",
-      "Neo Discovery": "neo2",
-      "Neo Revelation": "neo3",
-      "Neo Destiny": "neo4",
-      "Expedition": "ecard1",
-      "Aquapolis": "ecard2",
-      "Skyridge": "ecard3",
-      "EX Ruby & Sapphire": "ex1",
-      "EX Sandstorm": "ex2",
-      "EX Dragon": "ex3",
-      "Diamond & Pearl": "dp1",
-      "Platinum": "pl1",
-      "HeartGold & SoulSilver": "hgss1",
-      "Black & White": "bw1",
-      "XY": "xy1",
-      "Sun & Moon": "sm1",
-      "Sword & Shield": "swsh1",
-      "Scarlet & Violet": "sv1"
-    };
-
     for (const [name, id] of Object.entries(SET_NAME_TO_ID)) {
       if (title.toLowerCase().includes(name.toLowerCase())) {
         setId = id;
