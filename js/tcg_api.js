@@ -20,11 +20,9 @@ export async function fetchTCGByCardNumber(ebayTitle) {
 
     console.log(`📌 Extracted: Card Number=${cardNumber}, Set Name=${setName}, Set ID=${setId}`);
 
-    // Step 2: Fetch Card by ID (setId-cardNumber)
-    const cardId = `${setId}-${cardNumber}`;
-    console.log(`🔗 Fetching card by ID: ${cardId}`);
-
-    const cardResponse = await fetch(`/php/tcg_proxy.php?action=fetchCardById&cardId=${encodeURIComponent(cardId)}`);
+    // Corrected API call format using setId and cardNumber
+    const cardResponse = await fetch(`/php/tcg_proxy.php?action=fetchCardByNumber&setId=${encodeURIComponent(setId)}&cardNumber=${encodeURIComponent(cardNumber)}`);
+    
     if (!cardResponse.ok) throw new Error(`HTTP Error ${cardResponse.status}`);
 
     const cardData = await cardResponse.json();
@@ -45,7 +43,6 @@ export async function fetchTCGByCardNumber(ebayTitle) {
     return { name: "", price: null, image: "", url: "#" };
   }
 }
-
 
 /**
  * Fetches the best-matching card's price and image from the TCG API.

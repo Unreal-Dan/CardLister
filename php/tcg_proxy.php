@@ -84,6 +84,9 @@ elseif ($action === 'fetchCardById') {
     exit;
 }
 elseif ($action === 'fetchCardByNumber') {
+    $setId = isset($_GET['setId']) ? $_GET['setId'] : '';
+    $cardNumber = isset($_GET['cardNumber']) ? $_GET['cardNumber'] : '';
+
     if (!$cardNumber || !$setId) {
         echo json_encode(["error" => "Missing card number or set ID"]);
         exit;
@@ -107,6 +110,7 @@ elseif ($action === 'fetchCardByNumber') {
     $bestMatch = $responseData['data'][0];
 
     echo json_encode([
+        "id" => $bestMatch['id'],
         "name" => $bestMatch['name'],
         "set" => $bestMatch['set']['name'] ?? "Unknown",
         "rarity" => $bestMatch['rarity'] ?? "N/A",
