@@ -177,7 +177,7 @@ async function renderListings() {
     const { cardNumber, setId, setName } = await extractCardInfoFromEbayTitle(item.name);
     let tcgCard = { name: "N/A", price: 0, image: "", url: "#" };
     if (cardNumber && setId) {
-      tcgCard = await fetchTCGByCardNumber(`${setId}-${cardNumber}`);
+      tcgCard = await fetchTCGByCardNumber(cardNumber, setId);
     }
 
     const selectedCurrency = currencySelect.value;

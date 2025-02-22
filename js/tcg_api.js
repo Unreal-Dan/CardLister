@@ -5,28 +5,23 @@
  * @param {string} cardNumber - The set/card number identifier.
  * @returns {Promise<{ name: string, price: number|null, image: string|null }>}
  */
-export async function fetchTCGByCardNumber(ebayTitle) {
-  if (!ebayTitle) return { name: "", price: null, image: "", url: "#" };
-
+export async function fetchTCGByCardNumber(cardNumber, setId) {
   try {
-    console.log(`🔍 Extracting from eBay title: ${ebayTitle}`);
-
-    // Extract card number & set ID
-    const { cardNumber, setId, setName } = await extractCardInfoFromEbayTitle(ebayTitle);
     if (!cardNumber || !setId) {
       console.warn(`⚠️ Missing card number or set ID for: ${ebayTitle}`);
       return { name: "", price: null, image: "", url: "#" };
     }
 
-    console.log(`📌 Extracted: Card Number=${cardNumber}, Set Name=${setName}, Set ID=${setId}`);
+    // Log the final API request URL
+    const apiUrl = `/php/tcg_proxy.php?action=fetchCardByNumber&setId=${encodeURIComponent(setId)}&cardNumber=${encodeURIComponent(cardNumber)}`;
+    console.log(`🌐 Fetching from API: ${apiUrl}`);
 
-    // Corrected API call format using setId and cardNumber
-    const cardResponse = await fetch(`/php/tcg_proxy.php?action=fetchCardByNumber&setId=${encodeURIComponent(setId)}&cardNumber=${encodeURIComponent(cardNumber)}`);
-    
+    // Corrected API call
+    const cardResponse = await fetch(apiUrl);
     if (!cardResponse.ok) throw new Error(`HTTP Error ${cardResponse.status}`);
 
     const cardData = await cardResponse.json();
-    if (!cardData || cardData.error) throw new Error("Card not found");
+    if (!cardData || cardData.error) throw new Error(`Card not found: ${JSON.stringify(cardData)}`);
 
     // Extract price & image
     const prices = cardData.tcgplayer?.prices ?? {};
@@ -43,6 +38,7 @@ export async function fetchTCGByCardNumber(ebayTitle) {
     return { name: "", price: null, image: "", url: "#" };
   }
 }
+
 
 /**
  * Fetches the best-matching card's price and image from the TCG API.
@@ -140,68 +136,64 @@ export async function getBestMatchingCard(cardName) {
  * @param {string} title - The eBay listing title.
  * @returns {{ cardNumber: string, setId: string, setName: string }} - Extracted card data.
  */
-/**
- * Extracts the card number and set ID from an eBay listing title.
- * @param {string} title - The eBay listing title.
- * @returns {{ cardNumber: string, setId: string, setName: string }} - Extracted card data.
- */
 export async function extractCardInfoFromEbayTitle(title) {
   if (!title) return { cardNumber: "", setId: "", setName: "" };
 
-  // Extract card number (XXX/YYY format)
-  const numberMatch = title.match(/\d{1,3}\/\d{1,3}/);
-  const cardNumber = numberMatch ? numberMatch[0].split("/")[0] : "";
+  console.log(`🔍 Parsing eBay Title: ${title}`);
 
-  // Hardcoded set name to ID mapping
-  const SET_NAME_TO_ID = {
-    "Base Set": "base1",
-    "Jungle": "base2",
-    "Fossil": "base3",
-    "Team Rocket": "base4",
-    "Neo Genesis": "neo1",
-    "Neo Discovery": "neo2",
-    "Neo Revelation": "neo3",
-    "Neo Destiny": "neo4",
-    "Expedition": "ecard1",
-    "Aquapolis": "ecard2",
-    "Skyridge": "ecard3",
-    "EX Ruby & Sapphire": "ex1",
-    "EX Sandstorm": "ex2",
-    "EX Dragon": "ex3",
-    "Diamond & Pearl": "dp1",
-    "Platinum": "pl1",
-    "HeartGold & SoulSilver": "hgss1",
-    "Black & White": "bw1",
-    "XY": "xy1",
-    "Sun & Moon": "sm1",
-    "Sword & Shield": "swsh1",
-    "Scarlet & Violet": "sv1",
-    "Evolutions": "xy12",
-    "Champion’s Path": "swsh35",
-    "Hidden Fates": "sm115",
-    "Brilliant Stars": "swsh9",
-    "Evolving Skies": "swsh7",
-    "Obsidian Flames": "sv3",
-    "Lost Origin": "swsh11",
-    "Silver Tempest": "swsh12",
-    "Crown Zenith": "swsh12pt5",
-    "Paldea Evolved": "sv2",
-    "Paradox Rift": "sv4",
-    "Prize Pack Series 1": "svp1",
-    "Prize Pack Series 2": "svp2"
-  };
-
-  // Find set name in title
-  let setName = "";
   let setId = "";
-  for (const [name, id] of Object.entries(SET_NAME_TO_ID)) {
-    if (title.toLowerCase().includes(name.toLowerCase())) {
-      setName = name;
-      setId = id;
-      break;
+  let cardNumber = "";
+
+  if (title.includes("-")) {
+    // If the title is already in "setId-cardNumber" format, extract directly
+    const parts = title.split("-");
+    if (parts.length === 2) {
+      setId = parts[0];       // base2
+      cardNumber = parts[1];   // 4
+    }
+  } else {
+    // Extract card number from eBay title (e.g., "Jungle 4/64")
+    const numberMatch = title.match(/\b\d{1,3}\/\d{1,3}\b/);
+    if (numberMatch) {
+      cardNumber = numberMatch[0].split("/")[0];
+    }
+
+    // Extract set name from title
+    const SET_NAME_TO_ID = {
+      "Base Set": "base1",
+      "Jungle": "base2",
+      "Fossil": "base3",
+      "Team Rocket": "base4",
+      "Neo Genesis": "neo1",
+      "Neo Discovery": "neo2",
+      "Neo Revelation": "neo3",
+      "Neo Destiny": "neo4",
+      "Expedition": "ecard1",
+      "Aquapolis": "ecard2",
+      "Skyridge": "ecard3",
+      "EX Ruby & Sapphire": "ex1",
+      "EX Sandstorm": "ex2",
+      "EX Dragon": "ex3",
+      "Diamond & Pearl": "dp1",
+      "Platinum": "pl1",
+      "HeartGold & SoulSilver": "hgss1",
+      "Black & White": "bw1",
+      "XY": "xy1",
+      "Sun & Moon": "sm1",
+      "Sword & Shield": "swsh1",
+      "Scarlet & Violet": "sv1"
+    };
+
+    for (const [name, id] of Object.entries(SET_NAME_TO_ID)) {
+      if (title.toLowerCase().includes(name.toLowerCase())) {
+        setId = id;
+        break;
+      }
     }
   }
 
-  return { cardNumber, setId, setName };
+  console.log(`✅ Parsed from eBay Title -> Card Number: ${cardNumber}, Set ID: ${setId}`);
+
+  return { cardNumber, setId, setName: setId ? SET_NAME_TO_ID[setId] || "Unknown" : "" };
 }
 
