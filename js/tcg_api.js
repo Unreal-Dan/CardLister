@@ -11,23 +11,16 @@ export async function fetchTCGByCardNumber(ebayTitle) {
   try {
     console.log(`🔍 Extracting from eBay title: ${ebayTitle}`);
 
-    // Step 1: Extract card number & set name
-    const { cardNumber, setName } = extractCardInfoFromEbayTitle(ebayTitle);
-    if (!cardNumber || !setName) throw new Error("Card number or set name missing");
+    // Extract card number & set ID
+    const { cardNumber, setId, setName } = extractCardInfoFromEbayTitle(ebayTitle);
+    if (!cardNumber || !setId) {
+      console.warn(`⚠️ Missing card number or set ID for: ${ebayTitle}`);
+      return { name: "", price: null, image: "", url: "#" };
+    }
 
-    console.log(`📌 Extracted: Card Number=${cardNumber}, Set=${setName}`);
+    console.log(`📌 Extracted: Card Number=${cardNumber}, Set Name=${setName}, Set ID=${setId}`);
 
-    // Step 2: Get Set ID
-    const setResponse = await fetch(`/php/tcg_proxy.php?action=fetchSetByName&setName=${encodeURIComponent(setName)}`);
-    if (!setResponse.ok) throw new Error(`HTTP Error ${setResponse.status}`);
-
-    const setData = await setResponse.json();
-    if (!setData || setData.error) throw new Error("Set ID not found");
-
-    const setId = setData.id;
-    console.log(`✅ Found Set ID: ${setId}`);
-
-    // Step 3: Fetch Card by ID
+    // Step 2: Fetch Card by ID (setId-cardNumber)
     const cardId = `${setId}-${cardNumber}`;
     console.log(`🔗 Fetching card by ID: ${cardId}`);
 
@@ -148,34 +141,70 @@ export async function getBestMatchingCard(cardName) {
 /**
  * Extracts the card number and set name from an eBay listing title.
  * @param {string} title - The eBay listing title.
- * @returns {{ cardNumber: string, setName: string }} - Extracted card data.
+ * @returns {{ cardNumber: string, setId: string, setName: string }} - Extracted card data.
+ */
+/**
+ * Extracts the card number and set ID from an eBay listing title.
+ * @param {string} title - The eBay listing title.
+ * @returns {{ cardNumber: string, setId: string, setName: string }} - Extracted card data.
  */
 function extractCardInfoFromEbayTitle(title) {
-  if (!title) return { cardNumber: "", setName: "" };
+  if (!title) return { cardNumber: "", setId: "", setName: "" };
 
   // Extract card number (XXX/YYY format)
   const numberMatch = title.match(/\d{1,3}\/\d{1,3}/);
   const cardNumber = numberMatch ? numberMatch[0].split("/")[0] : "";
 
-  // Known Pokémon TCG set names
-  const knownSets = [
-    "Base Set", "Jungle", "Fossil", "Team Rocket", "Neo Genesis", "Neo Discovery", "Neo Revelation",
-    "Neo Destiny", "Expedition", "Aquapolis", "Skyridge", "EX", "Diamond & Pearl", "Platinum",
-    "HeartGold & SoulSilver", "Black & White", "XY", "Sun & Moon", "Sword & Shield", "Scarlet & Violet",
-    "Evolutions", "Champion’s Path", "Hidden Fates", "Brilliant Stars", "Evolving Skies", "Obsidian Flames",
-    "Lost Origin", "Silver Tempest", "Crown Zenith", "Paldea Evolved", "Paradox Rift", "Prize Pack Series"
-  ];
+  // Hardcoded set name to ID mapping
+  const SET_NAME_TO_ID = {
+    "Base Set": "base1",
+    "Jungle": "base2",
+    "Fossil": "base3",
+    "Team Rocket": "base4",
+    "Neo Genesis": "neo1",
+    "Neo Discovery": "neo2",
+    "Neo Revelation": "neo3",
+    "Neo Destiny": "neo4",
+    "Expedition": "ecard1",
+    "Aquapolis": "ecard2",
+    "Skyridge": "ecard3",
+    "EX Ruby & Sapphire": "ex1",
+    "EX Sandstorm": "ex2",
+    "EX Dragon": "ex3",
+    "Diamond & Pearl": "dp1",
+    "Platinum": "pl1",
+    "HeartGold & SoulSilver": "hgss1",
+    "Black & White": "bw1",
+    "XY": "xy1",
+    "Sun & Moon": "sm1",
+    "Sword & Shield": "swsh1",
+    "Scarlet & Violet": "sv1",
+    "Evolutions": "xy12",
+    "Champion’s Path": "swsh35",
+    "Hidden Fates": "sm115",
+    "Brilliant Stars": "swsh9",
+    "Evolving Skies": "swsh7",
+    "Obsidian Flames": "sv3",
+    "Lost Origin": "swsh11",
+    "Silver Tempest": "swsh12",
+    "Crown Zenith": "swsh12pt5",
+    "Paldea Evolved": "sv2",
+    "Paradox Rift": "sv4",
+    "Prize Pack Series 1": "svp1",
+    "Prize Pack Series 2": "svp2"
+  };
 
   // Find set name in title
   let setName = "";
-  for (const set of knownSets) {
-    if (title.toLowerCase().includes(set.toLowerCase())) {
-      setName = set;
+  let setId = "";
+  for (const [name, id] of Object.entries(SET_NAME_TO_ID)) {
+    if (title.toLowerCase().includes(name.toLowerCase())) {
+      setName = name;
+      setId = id;
       break;
     }
   }
 
-  console.log(`📌 Extracted from title: Number=${cardNumber}, Set=${setName}`);
-  return { cardNumber, setName };
+  return { cardNumber, setId, setName };
 }
 

@@ -174,12 +174,10 @@ async function renderListings() {
     console.log("Rendering Item:", item);
 
     // Extract card number from title
-    const cardNumberMatch = item.name.match(/\d{1,3}\/\d{1,3}/);
-    const cardNumber = cardNumberMatch ? cardNumberMatch[0] : null;
-
+    const { cardNumber, setId, setName } = extractCardInfoFromEbayTitle(item.name);
     let tcgCard = { name: "N/A", price: 0, image: "", url: "#" };
-    if (cardNumber) {
-      tcgCard = await fetchTCGByCardNumber(cardNumber);
+    if (cardNumber && setId) {
+      tcgCard = await fetchTCGByCardNumber(`${setId}-${cardNumber}`);
     }
 
     const selectedCurrency = currencySelect.value;
@@ -191,20 +189,20 @@ async function renderListings() {
     const li = document.createElement("li");
     li.classList.add("card-item");
     li.innerHTML = `
-        <a href="${item.url}" target="_blank">
-            <img src="${item.image}" alt="${item.name}">
-        </a>
-        <div class="card-info">
-            <strong>${item.name}</strong><br>
-            <span style="color: gray;">eBay Listing</span>: ${item.currency} $${item.ebayPrice.toFixed(2)}<br>
-            <span style="color: gray;">TCG Card:</span> <a href="${tcgCard.url}" target="_blank">${tcgCard.name}</a><br>
-            <span style="color: gray;">Set:</span> ${tcgCard.setName || "Unknown"}<br>
-            <span style="color: gray;">Rarity:</span> ${tcgCard.rarity || "N/A"}<br>
-            <span style="color: gray;">TCG Price:</span> ${selectedCurrency} $${tcgPrice.toFixed(2)}<br>
-            <span class="price-diff ${priceDiffClass}">${priceDiff.toFixed(2)}%</span>
-        </div>
-        <input type="number" value="${item.ebayPrice}" class="update-price">
-        <button class="update-button">✔</button>
+      <a href="${item.url}" target="_blank">
+          <img src="${item.image}" alt="${item.name}">
+      </a>
+      <div class="card-info">
+          <strong>${item.name}</strong><br>
+          <span style="color: gray;">eBay Listing</span>: ${item.currency} $${item.ebayPrice.toFixed(2)}<br>
+          <span style="color: gray;">TCG Card:</span> <a href="${tcgCard.url}" target="_blank">${tcgCard.name}</a><br>
+          <span style="color: gray;">Set:</span> ${tcgCard.setName || "Unknown"}<br>
+          <span style="color: gray;">Rarity:</span> ${tcgCard.rarity || "N/A"}<br>
+          <span style="color: gray;">TCG Price:</span> ${selectedCurrency} $${tcgPrice.toFixed(2)}<br>
+          <span class="price-diff ${priceDiffClass}">${priceDiff.toFixed(2)}%</span>
+      </div>
+      <input type="number" value="${item.ebayPrice}" class="update-price">
+      <button class="update-button">✔</button>
     `;
 
     listingList.appendChild(li);

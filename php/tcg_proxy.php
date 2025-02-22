@@ -51,33 +51,35 @@ if ($action === 'fetchPrice') {
     ]);
     exit;
 }
-elseif ($action === 'fetchSetByName') {
-    if (!$query) {
-        echo json_encode(["error" => "Missing set name"]);
+elseif ($action === 'fetchCardById') {
+    $cardId = isset($_GET['cardId']) ? $_GET['cardId'] : '';
+
+    if (!$cardId) {
+        echo json_encode(["error" => "Missing card ID"]);
         exit;
     }
 
-    // Format search query for set
-    $formattedQuery = 'name:"' . addslashes($query) . '"';
+    $url = $apiUrl . '/' . urlencode($cardId);
 
-    $params = [
-        'q' => $formattedQuery,
-        'pageSize' => 1
-    ];
-
-    $url = $apiUrl . '?' . http_build_query($params);
     $responseData = doApiRequest($url, $apiKey);
 
     if (!$responseData || empty($responseData['data'])) {
-        echo json_encode(["error" => "Set not found"]);
+        echo json_encode(["error" => "Card not found", "cardId" => $cardId]);
         exit;
     }
 
-    $bestMatch = $responseData['data'][0];
+    $cardData = $responseData['data'];
 
     echo json_encode([
-        "id" => $bestMatch['id'],
-        "name" => $bestMatch['name']
+        "id" => $cardData['id'],
+        "name" => $cardData['name'],
+        "set" => $cardData['set']['name'] ?? "Unknown",
+        "rarity" => $cardData['rarity'] ?? "N/A",
+        "tcgplayer" => [
+            "url" => $cardData['tcgplayer']['url'] ?? "#",
+            "prices" => $cardData['tcgplayer']['prices'] ?? []
+        ],
+        "images" => $cardData['images'] ?? []
     ]);
     exit;
 }
