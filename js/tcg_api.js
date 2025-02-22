@@ -166,8 +166,30 @@ export async function extractCardInfoFromEbayTitle(title) {
     "Sword & Shield": "swsh1",
     "Scarlet & Violet": "sv1"
   };
-
-
+  const SET_ID_TO_NAME = {
+    "base1":"Base Set",
+    "base2":"Jungle",
+    "base3":"Fossil",
+    "base4":"Team Rocket",
+    "neo1":"Neo Genesis",
+    "neo2":"Neo Discovery",
+    "neo3":"Neo Revelation",
+    "neo4":"Neo Destiny",
+    "ecard1":"Expedition",
+    "ecard2":"Aquapolis",
+    "ecard3":"Skyridge",
+    "ex1":"EX Ruby & Sapphire",
+    "ex2":"EX Sandstorm",
+    "ex3":"EX Dragon",
+    "dp1":"Diamond & Pearl",
+    "pl1":"Platinum",
+    "hgss1":"HeartGold & SoulSilver",
+    "bw1":"Black & White",
+    "xy1":"XY",
+    "sm1":"Sun & Moon",
+    "swsh1":"Sword & Shield",
+    "sv1":"Scarlet & Violet"
+  };
 
   let setId = "";
   let cardNumber = "";
@@ -195,6 +217,6 @@ export async function extractCardInfoFromEbayTitle(title) {
 
   console.log(`✅ Parsed from eBay Title -> Card Number: ${cardNumber}, Set ID: ${setId}`);
 
-  return { cardNumber, setId, setName: setId ? SET_NAME_TO_ID[setId] || "Unknown" : "" };
+  return { cardNumber, setId, setName: setId ? SET_ID_TO_NAME[setId] || "Unknown" : "" };
 }
 
