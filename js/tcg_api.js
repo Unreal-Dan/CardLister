@@ -1,5 +1,55 @@
 // tcg_api.js
 
+// Extract set name from title
+const SET_NAME_TO_ID = {
+  "Base Set": "base1",
+  "Jungle": "base2",
+  "Fossil": "base3",
+  "Team Rocket": "base4",
+  "Neo Genesis": "neo1",
+  "Neo Discovery": "neo2",
+  "Neo Revelation": "neo3",
+  "Neo Destiny": "neo4",
+  "Expedition": "ecard1",
+  "Aquapolis": "ecard2",
+  "Skyridge": "ecard3",
+  "EX Ruby & Sapphire": "ex1",
+  "EX Sandstorm": "ex2",
+  "EX Dragon": "ex3",
+  "Diamond & Pearl": "dp1",
+  "Platinum": "pl1",
+  "HeartGold & SoulSilver": "hgss1",
+  "Black & White": "bw1",
+  "XY": "xy1",
+  "Sun & Moon": "sm1",
+  "Sword & Shield": "swsh1",
+  "Scarlet & Violet": "sv1"
+};
+const SET_ID_TO_NAME = {
+  "base1":"Base Set",
+  "base2":"Jungle",
+  "base3":"Fossil",
+  "base4":"Team Rocket",
+  "neo1":"Neo Genesis",
+  "neo2":"Neo Discovery",
+  "neo3":"Neo Revelation",
+  "neo4":"Neo Destiny",
+  "ecard1":"Expedition",
+  "ecard2":"Aquapolis",
+  "ecard3":"Skyridge",
+  "ex1":"EX Ruby & Sapphire",
+  "ex2":"EX Sandstorm",
+  "ex3":"EX Dragon",
+  "dp1":"Diamond & Pearl",
+  "pl1":"Platinum",
+  "hgss1":"HeartGold & SoulSilver",
+  "bw1":"Black & White",
+  "xy1":"XY",
+  "sm1":"Sun & Moon",
+  "swsh1":"Sword & Shield",
+  "sv1":"Scarlet & Violet"
+};
+
 /**
  * Fetches a Pokémon TCG card by its unique card number (e.g., "095/203").
  * @param {string} cardNumber - The set/card number identifier.
@@ -30,7 +80,7 @@ export async function fetchTCGByCardNumber(cardNumber, setId) {
       price: prices.holofoil?.market ?? prices.reverseHolofoil?.market ?? prices.normal?.market ?? null,
       image: cardData.images?.large ?? cardData.images?.small ?? null,
       url: cardData.tcgplayer?.url ?? "#",
-      setName: cardData.set?.name || "Unknown",
+      setName: SET_ID_TO_NAME[setId],
       rarity: cardData.rarity || "N/A"
     };
   } catch (error) {
@@ -140,56 +190,6 @@ export async function extractCardInfoFromEbayTitle(title) {
   if (!title) return { cardNumber: "", setId: "", setName: "" };
 
   console.log(`🔍 Parsing eBay Title: ${title}`);
-
-  // Extract set name from title
-  const SET_NAME_TO_ID = {
-    "Base Set": "base1",
-    "Jungle": "base2",
-    "Fossil": "base3",
-    "Team Rocket": "base4",
-    "Neo Genesis": "neo1",
-    "Neo Discovery": "neo2",
-    "Neo Revelation": "neo3",
-    "Neo Destiny": "neo4",
-    "Expedition": "ecard1",
-    "Aquapolis": "ecard2",
-    "Skyridge": "ecard3",
-    "EX Ruby & Sapphire": "ex1",
-    "EX Sandstorm": "ex2",
-    "EX Dragon": "ex3",
-    "Diamond & Pearl": "dp1",
-    "Platinum": "pl1",
-    "HeartGold & SoulSilver": "hgss1",
-    "Black & White": "bw1",
-    "XY": "xy1",
-    "Sun & Moon": "sm1",
-    "Sword & Shield": "swsh1",
-    "Scarlet & Violet": "sv1"
-  };
-  const SET_ID_TO_NAME = {
-    "base1":"Base Set",
-    "base2":"Jungle",
-    "base3":"Fossil",
-    "base4":"Team Rocket",
-    "neo1":"Neo Genesis",
-    "neo2":"Neo Discovery",
-    "neo3":"Neo Revelation",
-    "neo4":"Neo Destiny",
-    "ecard1":"Expedition",
-    "ecard2":"Aquapolis",
-    "ecard3":"Skyridge",
-    "ex1":"EX Ruby & Sapphire",
-    "ex2":"EX Sandstorm",
-    "ex3":"EX Dragon",
-    "dp1":"Diamond & Pearl",
-    "pl1":"Platinum",
-    "hgss1":"HeartGold & SoulSilver",
-    "bw1":"Black & White",
-    "xy1":"XY",
-    "sm1":"Sun & Moon",
-    "swsh1":"Sword & Shield",
-    "sv1":"Scarlet & Violet"
-  };
 
   let setId = "";
   let cardNumber = "";
