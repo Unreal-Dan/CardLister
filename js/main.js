@@ -174,7 +174,7 @@ async function renderListings() {
     console.log("Rendering Item:", item);
 
     // Extract card number from title
-    const { cardNumber, setId, setName } = extractCardInfoFromEbayTitle(item.name);
+    const { cardNumber, setId, setName } = await extractCardInfoFromEbayTitle(item.name);
     let tcgCard = { name: "N/A", price: 0, image: "", url: "#" };
     if (cardNumber && setId) {
       tcgCard = await fetchTCGByCardNumber(`${setId}-${cardNumber}`);

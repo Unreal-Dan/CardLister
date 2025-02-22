@@ -12,7 +12,7 @@ export async function fetchTCGByCardNumber(ebayTitle) {
     console.log(`🔍 Extracting from eBay title: ${ebayTitle}`);
 
     // Extract card number & set ID
-    const { cardNumber, setId, setName } = extractCardInfoFromEbayTitle(ebayTitle);
+    const { cardNumber, setId, setName } = await extractCardInfoFromEbayTitle(ebayTitle);
     if (!cardNumber || !setId) {
       console.warn(`⚠️ Missing card number or set ID for: ${ebayTitle}`);
       return { name: "", price: null, image: "", url: "#" };
@@ -148,7 +148,7 @@ export async function getBestMatchingCard(cardName) {
  * @param {string} title - The eBay listing title.
  * @returns {{ cardNumber: string, setId: string, setName: string }} - Extracted card data.
  */
-function extractCardInfoFromEbayTitle(title) {
+export async function extractCardInfoFromEbayTitle(title) {
   if (!title) return { cardNumber: "", setId: "", setName: "" };
 
   // Extract card number (XXX/YYY format)
