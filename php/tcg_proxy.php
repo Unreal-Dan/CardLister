@@ -51,21 +51,49 @@ if ($action === 'fetchPrice') {
     ]);
     exit;
 }
-elseif ($action === 'fetchCardByNumber') {
-    if (!$cardNumber) {
-        echo json_encode(["error" => "Missing card number"]);
+elseif ($action === 'fetchSetByName') {
+    if (!$query) {
+        echo json_encode(["error" => "Missing set name"]);
         exit;
     }
 
-    // Search by card number
-    $formattedQuery = 'number:"' . addslashes($cardNumber) . '"';
+    // Format search query for set
+    $formattedQuery = 'name:"' . addslashes($query) . '"';
 
     $params = [
         'q' => $formattedQuery,
-        'pageSize' => 10,
-        'orderBy' => '-set.releaseDate'
+        'pageSize' => 1
     ];
-    
+
+    $url = $apiUrl . '?' . http_build_query($params);
+    $responseData = doApiRequest($url, $apiKey);
+
+    if (!$responseData || empty($responseData['data'])) {
+        echo json_encode(["error" => "Set not found"]);
+        exit;
+    }
+
+    $bestMatch = $responseData['data'][0];
+
+    echo json_encode([
+        "id" => $bestMatch['id'],
+        "name" => $bestMatch['name']
+    ]);
+    exit;
+}
+elseif ($action === 'fetchCardByNumber') {
+    if (!$cardNumber || !$setId) {
+        echo json_encode(["error" => "Missing card number or set ID"]);
+        exit;
+    }
+
+    $formattedQuery = 'set.id:"' . addslashes($setId) . '" AND number:"' . addslashes($cardNumber) . '"';
+
+    $params = [
+        'q' => $formattedQuery,
+        'pageSize' => 1
+    ];
+
     $url = $apiUrl . '?' . http_build_query($params);
     $responseData = doApiRequest($url, $apiKey);
 

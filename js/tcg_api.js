@@ -5,39 +5,54 @@
  * @param {string} cardNumber - The set/card number identifier.
  * @returns {Promise<{ name: string, price: number|null, image: string|null }>}
  */
-export async function fetchTCGByCardNumber(cardNumber) {
-  if (!cardNumber) return { name: "", price: null, image: "", url: "#" };
+export async function fetchTCGByCardNumber(ebayTitle) {
+  if (!ebayTitle) return { name: "", price: null, image: "", url: "#" };
 
   try {
-    console.log(`Looking up card: ${cardNumber}`);
-    const response = await fetch(`/php/tcg_proxy.php?action=fetchCardByNumber&cardNumber=${encodeURIComponent(cardNumber)}`, {
-      method: "GET"
-    });
+    console.log(`🔍 Extracting from eBay title: ${ebayTitle}`);
 
-    if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+    // Step 1: Extract card number & set name
+    const { cardNumber, setName } = extractCardInfoFromEbayTitle(ebayTitle);
+    if (!cardNumber || !setName) throw new Error("Card number or set name missing");
 
-    const data = await response.json();
-    if (data.error) throw new Error(data.error);
+    console.log(`📌 Extracted: Card Number=${cardNumber}, Set=${setName}`);
 
-    // Extract additional details
-    const prices = data.tcgplayer?.prices ?? {};
-    const marketPrice = prices.holofoil?.market ?? prices.reverseHolofoil?.market ?? prices.normal?.market ?? null;
-    const imageUrl = data.images?.large ?? data.images?.small ?? null;
-    const tcgUrl = data.tcgplayer?.url ?? "#";
+    // Step 2: Get Set ID
+    const setResponse = await fetch(`/php/tcg_proxy.php?action=fetchSetByName&setName=${encodeURIComponent(setName)}`);
+    if (!setResponse.ok) throw new Error(`HTTP Error ${setResponse.status}`);
 
+    const setData = await setResponse.json();
+    if (!setData || setData.error) throw new Error("Set ID not found");
+
+    const setId = setData.id;
+    console.log(`✅ Found Set ID: ${setId}`);
+
+    // Step 3: Fetch Card by ID
+    const cardId = `${setId}-${cardNumber}`;
+    console.log(`🔗 Fetching card by ID: ${cardId}`);
+
+    const cardResponse = await fetch(`/php/tcg_proxy.php?action=fetchCardById&cardId=${encodeURIComponent(cardId)}`);
+    if (!cardResponse.ok) throw new Error(`HTTP Error ${cardResponse.status}`);
+
+    const cardData = await cardResponse.json();
+    if (!cardData || cardData.error) throw new Error("Card not found");
+
+    // Extract price & image
+    const prices = cardData.tcgplayer?.prices ?? {};
     return {
-      name: data.name,
-      price: marketPrice,
-      image: imageUrl,
-      url: tcgUrl,
-      setName: data.set?.name || "Unknown",
-      rarity: data.rarity || "N/A"
+      name: cardData.name,
+      price: prices.holofoil?.market ?? prices.reverseHolofoil?.market ?? prices.normal?.market ?? null,
+      image: cardData.images?.large ?? cardData.images?.small ?? null,
+      url: cardData.tcgplayer?.url ?? "#",
+      setName: cardData.set?.name || "Unknown",
+      rarity: cardData.rarity || "N/A"
     };
   } catch (error) {
-    console.error(`❌ API request error for card number ${cardNumber}:`, error);
+    console.error(`❌ API request error for eBay title "${ebayTitle}":`, error);
     return { name: "", price: null, image: "", url: "#" };
   }
 }
+
 
 /**
  * Fetches the best-matching card's price and image from the TCG API.
@@ -129,3 +144,38 @@ export async function getBestMatchingCard(cardName) {
     image: bestPriceResult.image
   };
 }
+
+/**
+ * Extracts the card number and set name from an eBay listing title.
+ * @param {string} title - The eBay listing title.
+ * @returns {{ cardNumber: string, setName: string }} - Extracted card data.
+ */
+function extractCardInfoFromEbayTitle(title) {
+  if (!title) return { cardNumber: "", setName: "" };
+
+  // Extract card number (XXX/YYY format)
+  const numberMatch = title.match(/\d{1,3}\/\d{1,3}/);
+  const cardNumber = numberMatch ? numberMatch[0].split("/")[0] : "";
+
+  // Known Pokémon TCG set names
+  const knownSets = [
+    "Base Set", "Jungle", "Fossil", "Team Rocket", "Neo Genesis", "Neo Discovery", "Neo Revelation",
+    "Neo Destiny", "Expedition", "Aquapolis", "Skyridge", "EX", "Diamond & Pearl", "Platinum",
+    "HeartGold & SoulSilver", "Black & White", "XY", "Sun & Moon", "Sword & Shield", "Scarlet & Violet",
+    "Evolutions", "Champion’s Path", "Hidden Fates", "Brilliant Stars", "Evolving Skies", "Obsidian Flames",
+    "Lost Origin", "Silver Tempest", "Crown Zenith", "Paldea Evolved", "Paradox Rift", "Prize Pack Series"
+  ];
+
+  // Find set name in title
+  let setName = "";
+  for (const set of knownSets) {
+    if (title.toLowerCase().includes(set.toLowerCase())) {
+      setName = set;
+      break;
+    }
+  }
+
+  console.log(`📌 Extracted from title: Number=${cardNumber}, Set=${setName}`);
+  return { cardNumber, setName };
+}
+
