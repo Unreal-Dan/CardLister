@@ -32,9 +32,13 @@ function parseEbayXml(xmlString) {
   const items = [];
 
   xmlDoc.querySelectorAll("Item").forEach(item => {
+    const title = item.querySelector("Title")?.textContent || "";
+    const cardNumberMatch = title.match(/\d{1,3}\/\d{1,3}/); // Extract formats like 095/203
+
     items.push({
       itemId: item.querySelector("ItemID")?.textContent || "",
-      title: item.querySelector("Title")?.textContent || "",
+      title,
+      cardNumber: cardNumberMatch ? cardNumberMatch[0] : null, // Extracted card number
       price: parseFloat(item.querySelector("ConvertedCurrentPrice")?.textContent || "0"),
       currency: item.querySelector("ConvertedCurrentPrice")?.getAttribute("currencyID") || "USD",
       image: item.querySelector("GalleryURL")?.textContent || "placeholder.jpg",
@@ -42,9 +46,12 @@ function parseEbayXml(xmlString) {
     });
   });
 
-  return { ack, items };
+  return {
+    ack,
+    items,
+    rawXml: xmlString
+  };
 }
-
 
 /**
  * Creates a new eBay listing using the AddItem API.

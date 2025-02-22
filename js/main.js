@@ -1,7 +1,6 @@
 // Import the fetchTCGPrice function from tcg_api.js
-import { searchTCGCards, fetchTCGPrice, getBestMatchingCard } from "./tcg_api.js";
+import { fetchTCGByCardNumber, convertCurrency, searchTCGCards, fetchTCGPrice, getBestMatchingCard } from "./tcg_api.js";
 import { getMyEbaySelling, createEbayListing } from "./ebay_trading_api.js";
-
 
 const ebayButton = document.getElementById("fetchEbay");
 const listingList = document.getElementById("listingList");
@@ -174,14 +173,17 @@ async function renderListings() {
   for (let item of listings) {
     console.log("Rendering Item:", item);
 
-    // Fetch TCG price for comparison
-    let { price, image } = await getBestMatchingCard(item.name);
-    if (!price) {
-      price = 1.0;
+    // Extract card number from title
+    const cardNumberMatch = item.name.match(/\d{1,3}\/\d{1,3}/);
+    const cardNumber = cardNumberMatch ? cardNumberMatch[0] : null;
+
+    let tcgCard = { name: "N/A", price: 0, image: "", url: "#" };
+    if (cardNumber) {
+      tcgCard = await fetchTCGByCardNumber(cardNumber);
     }
 
     const selectedCurrency = currencySelect.value;
-    const tcgPrice = await convertCurrency(price, "USD", selectedCurrency);
+    const tcgPrice = await convertCurrency(tcgCard.price || 1.0, "USD", selectedCurrency);
 
     const priceDiff = ((item.ebayPrice - tcgPrice) / tcgPrice) * 100;
     const priceDiffClass = priceDiff > 0 ? "positive" : "negative";
@@ -194,8 +196,11 @@ async function renderListings() {
         </a>
         <div class="card-info">
             <strong>${item.name}</strong><br>
-            eBay: <span>${item.currency} $${item.ebayPrice.toFixed(2)}</span><br>
-            TCG: <span>${selectedCurrency} $${tcgPrice.toFixed(2)}</span><br>
+            <span style="color: gray;">eBay Listing</span>: ${item.currency} $${item.ebayPrice.toFixed(2)}<br>
+            <span style="color: gray;">TCG Card:</span> <a href="${tcgCard.url}" target="_blank">${tcgCard.name}</a><br>
+            <span style="color: gray;">Set:</span> ${tcgCard.setName || "Unknown"}<br>
+            <span style="color: gray;">Rarity:</span> ${tcgCard.rarity || "N/A"}<br>
+            <span style="color: gray;">TCG Price:</span> ${selectedCurrency} $${tcgPrice.toFixed(2)}<br>
             <span class="price-diff ${priceDiffClass}">${priceDiff.toFixed(2)}%</span>
         </div>
         <input type="number" value="${item.ebayPrice}" class="update-price">

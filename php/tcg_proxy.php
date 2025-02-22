@@ -6,9 +6,10 @@ header('Content-Type: application/json; charset=utf-8');
 $apiKey = getenv('TCG_API_KEY'); // Read the key from your environment
 $apiUrl = "https://api.pokemontcg.io/v2/cards";
 
-$action   = isset($_GET['action'])   ? $_GET['action']   : '';
-$cardName = isset($_GET['cardName']) ? $_GET['cardName'] : '';
-$query    = isset($_GET['query'])    ? $_GET['query']    : '';
+$action      = isset($_GET['action'])   ? $_GET['action']   : '';
+$cardName    = isset($_GET['cardName']) ? $_GET['cardName'] : '';
+$query       = isset($_GET['query'])    ? $_GET['query']    : '';
+$cardNumber  = isset($_GET['cardNumber']) ? $_GET['cardNumber'] : '';
 
 if (!$apiKey) {
     echo json_encode(["error" => "Missing TCG_API_KEY in environment."]);
@@ -20,26 +21,24 @@ if ($action === 'fetchPrice') {
         echo json_encode(["price" => null, "image" => null]);
         exit;
     }
-    
-    // Ensure the query searches for full names in a flexible way
-    $formattedQuery = 'name:"' . addslashes($cardName) . '"';
-    
+
+    $searchQuery = formatSearchQuery($cardName);
+
     $params = [
-        'q' => $formattedQuery,
+        'q' => $searchQuery,
         'pageSize' => 10,
         'orderBy' => '-set.releaseDate'
     ];
-    
-    $url = $apiUrl . '?' . http_build_query($params);
 
+    $url = $apiUrl . '?' . http_build_query($params);
     $responseData = doApiRequest($url, $apiKey);
+
     if (!$responseData || empty($responseData['data'])) {
         echo json_encode(["price" => null, "image" => null]);
         exit;
     }
 
-    $cards = $responseData['data'];
-    $bestMatch = $cards[0]; // Default to first match
+    $bestMatch = $responseData['data'][0];
 
     // Extract price & image
     $prices = $bestMatch['tcgplayer']['prices'] ?? [];
@@ -52,24 +51,60 @@ if ($action === 'fetchPrice') {
     ]);
     exit;
 }
+elseif ($action === 'fetchCardByNumber') {
+    if (!$cardNumber) {
+        echo json_encode(["error" => "Missing card number"]);
+        exit;
+    }
+
+    // Search by card number
+    $formattedQuery = 'number:"' . addslashes($cardNumber) . '"';
+
+    $params = [
+        'q' => $formattedQuery,
+        'pageSize' => 10,
+        'orderBy' => '-set.releaseDate'
+    ];
+    
+    $url = $apiUrl . '?' . http_build_query($params);
+    $responseData = doApiRequest($url, $apiKey);
+
+    if (!$responseData || empty($responseData['data'])) {
+        echo json_encode(["error" => "Card not found"]);
+        exit;
+    }
+
+    $bestMatch = $responseData['data'][0];
+
+    echo json_encode([
+        "name" => $bestMatch['name'],
+        "set" => $bestMatch['set']['name'] ?? "Unknown",
+        "rarity" => $bestMatch['rarity'] ?? "N/A",
+        "tcgplayer" => [
+            "url" => $bestMatch['tcgplayer']['url'] ?? "#",
+            "prices" => $bestMatch['tcgplayer']['prices'] ?? []
+        ],
+        "images" => $bestMatch['images'] ?? []
+    ]);
+    exit;
+}
 elseif ($action === 'searchCards') {
     if (!$query) {
         echo json_encode([]);
         exit;
     }
-    
-    // Properly format the query using wildcard for better matching
-    $formattedQuery = 'name:"' . addslashes($query) . '" OR name:' . addslashes($query) . '*';
-    
+
+    $searchQuery = formatSearchQuery($query);
+
     $params = [
-        'q' => $formattedQuery,
+        'q' => $searchQuery,
         'pageSize' => 50,
         'orderBy' => '-set.releaseDate'
     ];
-    
-    $url = $apiUrl . '?' . http_build_query($params);
 
+    $url = $apiUrl . '?' . http_build_query($params);
     $responseData = doApiRequest($url, $apiKey);
+
     if (!$responseData || empty($responseData['data'])) {
         echo json_encode([]);
         exit;
@@ -81,6 +116,24 @@ elseif ($action === 'searchCards') {
 else {
     echo json_encode(["error" => "Invalid or missing action."]);
     exit;
+}
+
+/**
+ * Formats a search query for TCG API by filtering out stop words.
+ */
+function formatSearchQuery($fullTitle) {
+    $stopWords = ['pokemon', 'tcg', 'holo', 'foil', 'rare', 'unlimited', 'first', 'edition', 'shadowless', 'promo', 'japanese', 'card', 'set', 'number'];
+    $words = preg_split('/[\s\-\(\)\/]+/', strtolower($fullTitle));
+
+    $filteredWords = array_diff($words, $stopWords);
+
+    if (empty($filteredWords)) {
+        return 'name:"' . addslashes($fullTitle) . '"';
+    }
+
+    $searchQuery = implode(' OR ', array_map(fn($word) => 'name:"' . addslashes($word) . '"', $filteredWords));
+
+    return $searchQuery;
 }
 
 /**

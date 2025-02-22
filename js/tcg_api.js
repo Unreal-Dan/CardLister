@@ -1,6 +1,45 @@
 // tcg_api.js
 
 /**
+ * Fetches a Pokémon TCG card by its unique card number (e.g., "095/203").
+ * @param {string} cardNumber - The set/card number identifier.
+ * @returns {Promise<{ name: string, price: number|null, image: string|null }>}
+ */
+export async function fetchTCGByCardNumber(cardNumber) {
+  if (!cardNumber) return { name: "", price: null, image: "", url: "#" };
+
+  try {
+    console.log(`Looking up card: ${cardNumber}`);
+    const response = await fetch(`/php/tcg_proxy.php?action=fetchCardByNumber&cardNumber=${encodeURIComponent(cardNumber)}`, {
+      method: "GET"
+    });
+
+    if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+
+    const data = await response.json();
+    if (data.error) throw new Error(data.error);
+
+    // Extract additional details
+    const prices = data.tcgplayer?.prices ?? {};
+    const marketPrice = prices.holofoil?.market ?? prices.reverseHolofoil?.market ?? prices.normal?.market ?? null;
+    const imageUrl = data.images?.large ?? data.images?.small ?? null;
+    const tcgUrl = data.tcgplayer?.url ?? "#";
+
+    return {
+      name: data.name,
+      price: marketPrice,
+      image: imageUrl,
+      url: tcgUrl,
+      setName: data.set?.name || "Unknown",
+      rarity: data.rarity || "N/A"
+    };
+  } catch (error) {
+    console.error(`❌ API request error for card number ${cardNumber}:`, error);
+    return { name: "", price: null, image: "", url: "#" };
+  }
+}
+
+/**
  * Fetches the best-matching card's price and image from the TCG API.
  * @param {string} cardName - The name of the Pokémon TCG card.
  * @returns {Promise<{ price: number|null, image: string|null }>}
@@ -65,27 +104,20 @@ export async function getBestMatchingCard(cardName) {
     return { name: "", price: null, image: null };
   }
 
-  // Sort and find the best match
-  let bestMatch = null;
-  const lowerCaseCardName = cardName.toLowerCase();
+  let bestMatch = searchResults[0]; // Default to first result
 
+  // Extract key words from cardName
+  const stopWords = ["pokemon", "tcg", "holo", "foil", "rare", "unlimited", "first", "edition", "shadowless", "promo"];
+  const words = cardName.toLowerCase().split(/[\s\-\(\)\/]+/).filter(word => !stopWords.includes(word));
+
+  // Try to find a better match based on extracted keywords
   for (const card of searchResults) {
-    const lowerCaseResultName = card.name.toLowerCase();
-
-    // Exact match first
-    if (lowerCaseResultName === lowerCaseCardName) {
-      bestMatch = card;
-      break;
+    for (const word of words) {
+      if (card.name.toLowerCase().includes(word)) {
+        bestMatch = card;
+        break;
+      }
     }
-
-    // Partial match fallback
-    if (lowerCaseResultName.includes(lowerCaseCardName)) {
-      bestMatch = card;
-    }
-  }
-
-  if (!bestMatch) {
-    bestMatch = searchResults[0]; // Fallback to first result
   }
 
   // Fetch price and image for best match
@@ -97,4 +129,3 @@ export async function getBestMatchingCard(cardName) {
     image: bestPriceResult.image
   };
 }
-
