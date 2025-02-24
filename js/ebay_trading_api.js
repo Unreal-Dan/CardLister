@@ -67,7 +67,7 @@ function parseEbayXml(xmlString) {
  */
 export async function createEbayListing(listingData) {
   try {
-    console.log("Creating eBay Listing:", listingData);
+    console.log("🚀 Creating eBay Listing with Data:", JSON.stringify(listingData, null, 2));
 
     const response = await fetch("/php/ebay_create_listing.php", {
       method: "POST",
@@ -80,19 +80,26 @@ export async function createEbayListing(listingData) {
     }
 
     const result = await response.json();
-    console.log("✅ Full eBay API Response:", JSON.stringify(result, null, 2)); // PRINT FULL RESPONSE
+
+    console.group("📦 eBay API Response:");
+    console.log("✅ Full JSON Response:", JSON.stringify(result, null, 2));
+    if (result.rawXml) {
+      console.log("📜 Raw XML Response:\n", result.rawXml);
+    }
+    console.groupEnd();
 
     if (result.ack === "Success") {
       alert(`✅ Listing created successfully! eBay Item ID: ${result.itemId}`);
       return result;
     } else {
-      console.error("❌ eBay API Error:", JSON.stringify(result.errors, null, 2)); // PRINT ERROR DETAILS
+      console.error("❌ eBay API Error:", JSON.stringify(result.errors, null, 2));
       alert(`❌ Failed to create listing: ${JSON.stringify(result.errors, null, 2)}`);
       return result;
     }
   } catch (err) {
-    console.error("❌ Fatal Error creating eBay listing:", err);
+    console.error("❌ Fatal Error Creating eBay Listing:", err);
     return { ack: "Error", errors: [err.message] };
   }
 }
+
 
