@@ -45,7 +45,7 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
     <PrimaryCategory>
       <CategoryID>183454</CategoryID>
     </PrimaryCategory>
-    <StartPrice currencyID="USD">' . $data['startPrice'] . '</StartPrice>
+    <StartPrice currencyID="USD">' . number_format((float)$data['startPrice'], 2, '.', '') . '</StartPrice>
     <ListingDuration><![CDATA[GTC]]></ListingDuration>
     <ListingType>FixedPriceItem</ListingType>
     <Quantity>1</Quantity>
@@ -54,8 +54,8 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
     <ShippingDetails>
       <ShippingType>Flat</ShippingType>
       <ShippingServiceOptions>
-        <ShippingService>USPSFirstClass</ShippingService>
-        <ShippingServiceCost currencyID="USD">4.99</ShippingServiceCost>
+        <ShippingService>CA_ExpeditedParcel</ShippingService>
+        <ShippingServiceCost currencyID="CAD">10.00</ShippingServiceCost>
       </ShippingServiceOptions>
     </ShippingDetails>
     <ReturnPolicy>
