@@ -121,6 +121,7 @@ if ($err) {
 }
 
 // Parse eBay Response
+file_put_contents("ebay_debug.log", $rawResponse);
 echo json_encode(parseEbayXmlResponse($rawResponse));
 
 /**
@@ -138,7 +139,12 @@ function parseEbayXmlResponse($xmlString) {
     $errors = [];
 
     foreach ($xml->Errors as $error) {
-        $errors[] = ["code" => (string)$error->ErrorCode, "message" => (string)$error->LongMessage];
+        $errors[] = [
+            "code" => (string)$error->ErrorCode,
+            "shortMessage" => (string)$error->ShortMessage,
+            "longMessage" => (string)$error->LongMessage,
+            "severity" => (string)$error->SeverityCode
+        ];
     }
 
     return [
