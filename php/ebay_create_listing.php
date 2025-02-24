@@ -51,13 +51,7 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
     <Quantity>1</Quantity>
     <PaymentMethods>CreditCard</PaymentMethods>
     <DispatchTimeMax>2</DispatchTimeMax>
-    <ShippingDetails>
-      <ShippingType>Flat</ShippingType>
-      <ShippingServiceOptions>
-        <ShippingService>CA_ExpeditedParcel</ShippingService>
-        <ShippingServiceCost>10.00</ShippingServiceCost>
-      </ShippingServiceOptions>
-    </ShippingDetails>
+
     <ReturnPolicy>
       <ReturnsAcceptedOption>ReturnsAccepted</ReturnsAcceptedOption>
       <RefundOption>MoneyBack</RefundOption>
