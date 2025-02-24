@@ -162,6 +162,7 @@ endif;
         <button id="massUpdate">⚡ Mass Update</button>
         <input type="number" id="massUpdatePercent" placeholder="± % of TCG Price">
         <button id="createListingBtn">➕ Create Listing</button>
+        <button id="testPost">🚀 Test eBay Listing</button>
     </header>
 
     <main>

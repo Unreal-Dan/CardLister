@@ -212,6 +212,23 @@ async function renderListings() {
   console.log("Listings successfully rendered.");
 }
 
+document.getElementById("testPost").addEventListener("click", async () => {
+  const testListing = {
+    title: "TEST Charizard ex (Paldean Fates)",
+    startPrice: 9.99,
+    conditionID: 2750, // Near Mint (Ensure it's numeric)
+    quantity: 1,
+    image: "https://images.pokemontcg.io/sv4pt5/234_hires.png",
+    description: "Test listing for debugging eBay API integration.",
+    grader: "PSA",
+    grade: "10"
+  };
+
+  console.log("🚀 Posting Test Listing:", testListing);
+  const result = await createEbayListing(testListing);
+  console.log("✅ Test Listing Result:", result);
+});
+
 // Event Listeners
 ebayButton.addEventListener("click", handleFetchEbayListings);
 currencySelect.addEventListener("change", renderListings);

@@ -121,8 +121,12 @@ if ($err) {
 }
 
 // Parse eBay Response
-file_put_contents("ebay_debug.log", $rawResponse);
-echo json_encode(parseEbayXmlResponse($rawResponse));
+header("Content-Type: application/json");
+echo json_encode([
+    "rawXml" => $rawResponse,
+    "parsedResponse" => parseEbayXmlResponse($rawResponse)
+], JSON_PRETTY_PRINT);
+exit;
 
 /**
  * Parses eBay's XML response into JSON.
