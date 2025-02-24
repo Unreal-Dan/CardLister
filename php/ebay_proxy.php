@@ -59,7 +59,7 @@ function getMyEbaySelling($devID, $appID, $certID, $userToken) {
     $certID = is_array($certID) ? implode(',', $certID) : $certID;
 
     $headers = [
-        "X-EBAY-API-SITEID: 0",
+        "X-EBAY-API-SITEID: 2",  // 2 = Canada
         "X-EBAY-API-COMPATIBILITY-LEVEL: 967",
         "X-EBAY-API-CALL-NAME: GetMyeBaySelling",
         "X-EBAY-API-DEV-NAME: $devID",

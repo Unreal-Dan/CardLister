@@ -2,6 +2,11 @@
 session_start();
 header("Content-Type: application/json; charset=utf-8");
 
+$devID     = getenv("EBAY_DEV_ID");
+$appID     = getenv("EBAY_APP_ID");
+$certID    = getenv("EBAY_CERT_ID");
+$userToken = isset($_SESSION['ebay_token']['access_token']) ? $_SESSION['ebay_token']['access_token'] : null;
+
 // Retrieve eBay authentication token
 $userToken = $_SESSION['ebay_token']['access_token'] ?? null;
 if (!$userToken) {
@@ -63,7 +68,7 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
     <Currency>CAD</Currency>
     <PostalCode>V3R2Z2</PostalCode>
     <Location>Surrey, BC</Location>
-    <Site>CA</Site>
+    <Site>Canada</Site>
     <PictureDetails>
       <PictureURL>' . $data['image'] . '</PictureURL>
     </PictureDetails>
@@ -97,9 +102,12 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
 
 // eBay API Headers
 $headers = [
-    "X-EBAY-API-SITEID: 0",
+    "X-EBAY-API-SITEID: 2",  // 2 = Canada
     "X-EBAY-API-COMPATIBILITY-LEVEL: 967",
     "X-EBAY-API-CALL-NAME: AddItem",
+    "X-EBAY-API-DEV-NAME: $devID",
+    "X-EBAY-API-APP-NAME: $appID",
+    "X-EBAY-API-CERT-NAME: $certID",
     "Content-Type: text/xml"
 ];
 
