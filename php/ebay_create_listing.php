@@ -56,6 +56,7 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
       <ShippingServiceOptions>
         <ShippingService>CanadaPostExpedited</ShippingService>
         <ShippingServiceCost>10.00</ShippingServiceCost>
+        <ShippingServicePriority>1</ShippingServicePriority>
       </ShippingServiceOptions>
     </ShippingDetails>
     <ReturnPolicy>
