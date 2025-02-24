@@ -23,7 +23,8 @@ $data['game'] = $data['game'] ?? "Pokémon TCG";   // Default to Pokémon TCG
 $data['listingDuration'] = $data['listingDuration'] ?? "GTC"; // Fix listing duration
 $data['image'] = $data['image'] ?? "https://i.ebayimg.com/images/g/default.jpg"; // Default placeholder image
 $data['description'] = $data['description'] ?? "No description provided.";
-$data['conditionID'] = getEbayConditionID($data['conditionID']);
+$isGraded = !empty($data['grader']) && $data['grader'] !== "Ungraded";
+$data['conditionID'] = getEbayConditionID($data['conditionID'], $isGraded);
 
 // eBay API Endpoint
 $endpoint = "https://api.ebay.com/ws/api.dll";
@@ -147,17 +148,9 @@ function parseEbayXmlResponse($xmlString) {
 /**
  * Maps the condition to an eBay Condition ID.
  */
-function getEbayConditionID($condition) {
-    $conditionMap = [
-        "New" => 1000,
-        "Near Mint" => 2750, // Graded
-        "Mint" => 2750,      // Graded
-        "Light Play" => 2751,
-        "Moderate Play" => 2752,
-        "Heavy Play" => 2753,
-        "Damaged" => 2754,
-    ];
-    return $conditionMap[$condition] ?? 4000; // Default to "Ungraded"
+function getEbayConditionID($condition, $isGraded = false) {
+    if ($isGraded) return 2750; // Graded Condition ID
+    return 4000; // Default to "Ungraded"
 }
 ?>
 
