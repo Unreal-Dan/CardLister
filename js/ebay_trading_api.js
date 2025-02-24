@@ -80,17 +80,19 @@ export async function createEbayListing(listingData) {
     }
 
     const result = await response.json();
-    console.log("eBay API Response:", result);
+    console.log("✅ Full eBay API Response:", JSON.stringify(result, null, 2)); // PRINT FULL RESPONSE
 
     if (result.ack === "Success") {
       alert(`✅ Listing created successfully! eBay Item ID: ${result.itemId}`);
       return result;
     } else {
-      alert(`❌ Failed to create listing: ${JSON.stringify(result.errors)}`);
+      console.error("❌ eBay API Error:", JSON.stringify(result.errors, null, 2)); // PRINT ERROR DETAILS
+      alert(`❌ Failed to create listing: ${JSON.stringify(result.errors, null, 2)}`);
       return result;
     }
   } catch (err) {
-    console.error("Error creating eBay listing:", err);
+    console.error("❌ Fatal Error creating eBay listing:", err);
     return { ack: "Error", errors: [err.message] };
   }
 }
+
