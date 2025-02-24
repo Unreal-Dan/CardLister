@@ -45,7 +45,7 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
     <PrimaryCategory>
       <CategoryID>183454</CategoryID>
     </PrimaryCategory>
-    <StartPrice currencyID="USD">' . sprintf("%.2f", (float)$data['startPrice']) . '</StartPrice>
+    <StartPrice>' . sprintf("%.2f", (float)$data['startPrice']) . '</StartPrice>
     <ListingDuration><![CDATA[GTC]]></ListingDuration>
     <ListingType>FixedPriceItem</ListingType>
     <Quantity>1</Quantity>
