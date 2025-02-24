@@ -41,7 +41,6 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
       <CategoryID>183454</CategoryID>
     </PrimaryCategory>
     <StartPrice currencyID="USD">' . $data['startPrice'] . '</StartPrice>
-    <ConditionID>' . $data['conditionID'] . '</ConditionID>
     <ListingDuration><![CDATA[GTC]]></ListingDuration>
     <ListingType>FixedPriceItem</ListingType>
     <Quantity>1</Quantity>
@@ -60,15 +59,19 @@ $xmlBody = '<?xml version="1.0" encoding="utf-8"?>
       <ReturnsWithinOption>Days_30</ReturnsWithinOption>
       <ShippingCostPaidByOption>Buyer</ShippingCostPaidByOption>
     </ReturnPolicy>
-    <Country>US</Country>
-    <Currency>USD</Currency>
-    <PostalCode>10001</PostalCode>
-    <Location>New York, NY</Location>
-    <Site>US</Site>
+    <Country>CA</Country>
+    <Currency>CAD</Currency>
+    <PostalCode>V3R2Z2</PostalCode>
+    <Location>Surrey, BC</Location>
+    <Site>CA</Site>
     <PictureDetails>
       <PictureURL>' . $data['image'] . '</PictureURL>
     </PictureDetails>
     <Description><![CDATA[' . $data['description'] . ']]></Description>
+    <BestOfferDetails>
+      <BestOfferEnabled>false</BestOfferEnabled>
+    </BestOfferDetails>
+
 
     <!-- Item Specifics -->
     <ItemSpecifics>
