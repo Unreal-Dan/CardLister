@@ -67,6 +67,9 @@ function parseEbayXml(xmlString) {
  */
 export async function createEbayListing(listingData) {
   try {
+    listingData.categoryID = listingData.categoryID || "183454"; // Set default Trading Card category
+    listingData.listingDuration = listingData.listingDuration || "GTC"; // Default to Good 'Til Cancelled
+
     console.log("🚀 Creating eBay Listing with Data:", JSON.stringify(listingData, null, 2));
 
     const response = await fetch("/php/ebay_create_listing.php", {
